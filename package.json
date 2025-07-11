@@ -1,0 +1,31 @@
+{
+  "name": "@heddendorp/trpc",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0",
+    "yarn": "^4.3.0"
+  },
+  "packageManager": "yarn@4.3.1",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "yarn workspaces foreach -A run build",
+    "dev": "yarn workspaces foreach -A run dev",
+    "test": "yarn workspaces foreach -A run test",
+    "lint": "yarn workspaces foreach -A run lint",
+    "lint-fix": "yarn workspaces foreach -A run lint -- --fix && yarn format-fix",
+    "format": "prettier \"**/*\" --ignore-unknown",
+    "format-fix": "yarn format --write --list-different",
+    "clean": "find . -name node_modules -o -name dist -type d -prune | xargs rm -rf",
+    "prepublish": "yarn build",
+    "publish": "lerna publish"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.5",
+    "lerna": "^8.1.2",
+    "prettier": "^3.3.3",
+    "typescript": "^5.8.2"
+  }
+}

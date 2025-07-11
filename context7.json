@@ -1,0 +1,48 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "projectTitle": "tRPC Angular Packages",
+  "description": "Angular packages for tRPC integration: HttpClient link and TanStack Angular Query adapter",
+  "folders": [
+    "packages/angular-http-client",
+    "packages/tanstack-angular-query"
+  ],
+  "excludeFolders": [
+    "node_modules",
+    "dist",
+    "src",
+    ".git",
+    ".github",
+    ".pnpm",
+    ".nx",
+    "coverage"
+  ],
+  "excludeFiles": [
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "lerna.json",
+    "pnpm-lock.yaml",
+    "pnpm-workspace.yaml",
+    "prettier.config.js",
+    "tsconfig.json",
+    "tsconfig.build.json",
+    "tsdown.config.ts",
+    ".gitignore",
+    ".npmrc",
+    ".nvmrc",
+    ".prettierignore",
+    ".tool-versions"
+  ],
+  "rules": [
+    "Use Angular 16+ and TypeScript 5.7+ for compatibility",
+    "Use @angular/common HttpClient for HTTP requests with angular-http-client",
+    "Use @tanstack/angular-query-experimental for reactive data fetching with tanstack-angular-query",
+    "Always inject HttpClient service when using angular-http-client",
+    "Create typed injectors with createTRPCInjectors for better ergonomics",
+    "Use Angular's dependency injection system with provideTRPC and provideTanStackQuery",
+    "Follow Angular best practices for component design and state management",
+    "Use Angular signals for reactive state management",
+    "Leverage Angular HTTP interceptors for cross-cutting concerns like authentication"
+  ],
+  "previousVersions": []
+}

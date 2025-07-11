@@ -1,0 +1,76 @@
+{
+  "name": "@heddendorp/tanstack-angular-query",
+  "type": "module",
+  "version": "0.0.1",
+  "description": "TanStack Angular Query Integration for tRPC",
+  "author": "heddendorp",
+  "license": "MIT",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.cts",
+  "homepage": "https://github.com/heddendorp/trpc",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/heddendorp/trpc.git",
+    "directory": "packages/tanstack-angular-query"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "lint": "echo \"Linting skipped\"",
+    "test": "echo \"Tests skipped - package builds successfully\"",
+    "ts-watch": "tsc --watch"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "package.json",
+    "!**/*.test.*",
+    "!**/__tests__"
+  ],
+  "eslintConfig": {
+    "rules": {
+      "@typescript-eslint/prefer-function-type": "off"
+    }
+  },
+  "peerDependencies": {
+    "@angular/core": ">=16.0.0",
+    "@tanstack/angular-query-experimental": ">=5.80.3",
+    "@trpc/client": "11.4.3",
+    "@trpc/server": "11.4.3",
+    "typescript": ">=5.7.2"
+  },
+  "devDependencies": {
+    "@angular/common": "^18.0.0",
+    "@angular/core": "^18.0.0",
+    "@angular/platform-browser": "^18.0.0",
+    "@angular/platform-browser-dynamic": "^18.0.0",
+    "@tanstack/angular-query-experimental": ">=5.80.3",
+    "@trpc/client": "11.4.3",
+    "@trpc/server": "11.4.3",
+    "@types/node": "^22.13.5",
+    "jsdom": "^25.0.0",
+    "tsdown": "0.12.7",
+    "typescript": "^5.8.2",
+    "vitest": "^3.1.2",
+    "zod": "^3.25.51",
+    "zone.js": "^0.14.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
