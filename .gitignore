@@ -14,13 +14,20 @@ db.sqlite
 
 node_modules/
 package-lock.json
-yarn.lock
 .yalc
 yalc.lock
 
 tests-results/
 coverage/
 __generated__/
+
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
 
 
 # Ignore all folders except `src/` and `tests/` in every published package
