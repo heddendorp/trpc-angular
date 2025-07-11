@@ -1,5 +1,5 @@
 {
-  "name": "@heddendorp/trpc",
+  "name": "@heddendorp/trpc-angular",
   "private": true,
   "type": "module",
   "engines": {
