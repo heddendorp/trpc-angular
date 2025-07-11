@@ -1,7 +1,7 @@
 {
   "name": "@heddendorp/angular-http-client",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.1.0-alpha.0",
   "description": "Angular HttpClient link for tRPC client",
   "author": "heddendorp",
   "license": "MIT",
