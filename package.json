@@ -19,7 +19,7 @@
     "format": "prettier \"**/*\" --ignore-unknown",
     "format-fix": "yarn format --write --list-different",
     "clean": "find . -name node_modules -o -name dist -type d -prune | xargs rm -rf",
-    "prepublish": "yarn build",
+    "prepublishOnly": "yarn build",
     "publish": "lerna publish"
   },
   "devDependencies": {
