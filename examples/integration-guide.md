@@ -1,6 +1,6 @@
 # Integration Example: Using Angular HTTP Client with TanStack Angular Query
 
-This example demonstrates how to use both `@heddendorp/angular-http-client` and `@heddendorp/tanstack-angular-query` together for a complete Angular-native tRPC solution.
+This example demonstrates how to use both `@heddendorp/trpc-link-angular` and `@heddendorp/tanstack-angular-query` together for a complete Angular-native tRPC solution.
 
 ## Benefits of Integration
 
@@ -14,7 +14,7 @@ This example demonstrates how to use both `@heddendorp/angular-http-client` and 
 ### 1. Install Dependencies
 
 ```bash
-yarn add @heddendorp/angular-http-client @heddendorp/tanstack-angular-query
+yarn add @heddendorp/trpc-link-angular @heddendorp/tanstack-angular-query
 yarn add @tanstack/angular-query-experimental @trpc/client @trpc/server
 ```
 
@@ -25,7 +25,7 @@ yarn add @tanstack/angular-query-experimental @trpc/client @trpc/server
 import { inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { createTRPCClient } from '@trpc/client';
-import { angularHttpLink } from '@heddendorp/angular-http-client';
+import { angularHttpLink } from '@heddendorp/trpc-link-angular';
 import type { AppRouter } from '../server/router';
 
 export function createAngularTRPCClient() {

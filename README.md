@@ -2,7 +2,7 @@
 
 This repository contains two Angular packages for tRPC:
 
-- `@heddendorp/angular-http-client` - Angular HttpClient link for tRPC client
+- `@heddendorp/trpc-link-angular` - Angular HttpClient link for tRPC client
 - `@heddendorp/tanstack-angular-query` - TanStack Angular Query Integration for tRPC
 
 ## Overview
@@ -11,11 +11,11 @@ These packages have been extracted from the main tRPC repository and simplified 
 
 ## Packages
 
-### @heddendorp/angular-http-client
+### @heddendorp/trpc-link-angular
 
 An Angular HttpClient link for tRPC client that allows you to use Angular's HttpClient with tRPC.
 
-- **Location**: `packages/angular-http-client`
+- **Location**: `packages/trpc-link-angular`
 - **Main Purpose**: Provides HTTP transport for tRPC client using Angular's HttpClient
 - **Peer Dependencies**:
   - `@angular/common >=16.0.0`

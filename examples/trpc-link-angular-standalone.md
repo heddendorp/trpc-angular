@@ -1,11 +1,11 @@
 # Angular HTTP Client Example
 
-This example shows how to use the `@heddendorp/angular-http-client` package standalone to integrate tRPC with Angular's HttpClient.
+This example shows how to use the `@heddendorp/trpc-link-angular` package standalone to integrate tRPC with Angular's HttpClient.
 
 ## Installation
 
 ```bash
-yarn add @heddendorp/angular-http-client @trpc/client @trpc/server
+yarn add @heddendorp/trpc-link-angular @trpc/client @trpc/server
 ```
 
 ## Basic Usage
@@ -17,7 +17,7 @@ yarn add @heddendorp/angular-http-client @trpc/client @trpc/server
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { createTRPCClient } from '@trpc/client';
-import { angularHttpLink } from '@heddendorp/angular-http-client';
+import { angularHttpLink } from '@heddendorp/trpc-link-angular';
 import type { AppRouter } from '../server/router';
 
 @Injectable({
@@ -125,7 +125,7 @@ export class UserComponent implements OnInit {
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { createTRPCClient } from '@trpc/client';
-import { angularHttpLink } from '@heddendorp/angular-http-client';
+import { angularHttpLink } from '@heddendorp/trpc-link-angular';
 import type { AppRouter } from '../server/router';
 
 @Injectable({
@@ -163,7 +163,7 @@ export class TrpcWithAuthService {
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { createTRPCClient } from '@trpc/client';
-import { angularHttpLink } from '@heddendorp/angular-http-client';
+import { angularHttpLink } from '@heddendorp/trpc-link-angular';
 import type { AppRouter } from '../server/router';
 
 @Injectable({
@@ -323,7 +323,7 @@ const client = createTRPCClient<AppRouter>({
 });
 
 // After
-import { angularHttpLink } from '@heddendorp/angular-http-client';
+import { angularHttpLink } from '@heddendorp/trpc-link-angular';
 
 const client = createTRPCClient<AppRouter>({
   links: [

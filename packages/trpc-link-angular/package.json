@@ -1,5 +1,5 @@
 {
-  "name": "@heddendorp/angular-http-client",
+  "name": "@heddendorp/trpc-link-angular",
   "type": "module",
   "version": "0.1.0-alpha.0",
   "description": "Angular HttpClient link for tRPC client",
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/heddendorp/trpc.git",
-    "directory": "packages/angular-http-client"
+    "directory": "packages/trpc-link-angular"
   },
   "scripts": {
     "build": "tsdown",
