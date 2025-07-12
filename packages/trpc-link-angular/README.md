@@ -1,11 +1,11 @@
-# @trpc/angular-http-client
+# @heddendorp/trpc-link-angular
 
 Angular HttpClient link for tRPC client that provides seamless integration with Angular's HTTP services.
 
 ## Installation
 
 ```bash
-npm install @trpc/angular-http-client
+npm install @heddendorp/trpc-link-angular
 ```
 
 ## Peer Dependencies
@@ -25,7 +25,7 @@ This package requires the following peer dependencies:
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { createTRPCClient } from '@trpc/client';
-import { angularHttpLink } from '@trpc/angular-http-client';
+import { angularHttpLink } from '@heddendorp/trpc-link-angular';
 import type { AppRouter } from '../server/router';
 
 @Injectable({
@@ -130,7 +130,7 @@ httpLink({
 });
 
 // After
-import { angularHttpLink } from '@trpc/angular-http-client';
+import { angularHttpLink } from '@heddendorp/trpc-link-angular';
 
 angularHttpLink({
   url: 'http://localhost:3000/trpc',

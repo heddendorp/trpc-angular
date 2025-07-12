@@ -1,6 +1,6 @@
 # Maintenance Guide for tRPC Angular Packages
 
-This guide provides comprehensive instructions for maintaining, testing, and publishing the `@heddendorp/angular-http-client` and `@heddendorp/tanstack-angular-query` packages.
+This guide provides comprehensive instructions for maintaining, testing, and publishing the `@heddendorp/trpc-link-angular` and `@heddendorp/tanstack-angular-query` packages.
 
 ## Table of Contents
 
@@ -47,7 +47,7 @@ This repository uses Yarn workspaces:
 
 ```
 packages/
-├── angular-http-client/          # Angular HttpClient integration
+├── trpc-link-angular/          # Angular HttpClient integration
 │   ├── src/
 │   ├── package.json
 │   └── tsdown.config.ts
@@ -70,14 +70,14 @@ packages/
 Navigate to specific packages:
 
 ```bash
-cd packages/angular-http-client
+cd packages/trpc-link-angular
 yarn build
 ```
 
 Or run commands from root:
 
 ```bash
-yarn workspace @heddendorp/angular-http-client build
+yarn workspace @heddendorp/trpc-link-angular build
 ```
 
 ## Building
@@ -98,7 +98,7 @@ yarn build
 yarn dev
 
 # Build specific package
-yarn workspace @heddendorp/angular-http-client build
+yarn workspace @heddendorp/trpc-link-angular build
 ```
 
 ### Output Structure
@@ -133,7 +133,7 @@ To add proper tests:
 
 2. **Create test files**:
    ```bash
-   # In packages/angular-http-client/src/
+   # In packages/trpc-link-angular/src/
    touch angularHttpLink.test.ts
    
    # In packages/tanstack-angular-query/src/
@@ -159,7 +159,7 @@ To add proper tests:
 
 2. **Link for local testing**:
    ```bash
-   cd packages/angular-http-client
+   cd packages/trpc-link-angular
    yarn link
    
    cd ../tanstack-angular-query
@@ -169,7 +169,7 @@ To add proper tests:
 3. **Use in test project**:
    ```bash
    cd /path/to/test-project
-   yarn link @heddendorp/angular-http-client
+   yarn link @heddendorp/trpc-link-angular
    yarn link @heddendorp/tanstack-angular-query
    ```
 
@@ -217,7 +217,7 @@ The repository uses **Lerna** for coordinated publishing.
 If needed, publish packages individually:
 
 ```bash
-cd packages/angular-http-client
+cd packages/trpc-link-angular
 npm publish
 
 cd ../tanstack-angular-query
@@ -291,7 +291,7 @@ Keep peer dependencies updated:
 yarn workspaces list
 
 # Check dependency graph
-yarn info @heddendorp/angular-http-client
+yarn info @heddendorp/trpc-link-angular
 
 # Verbose build
 yarn build --verbose
@@ -347,7 +347,7 @@ yarn build --verbose
 
 4. **Verify publication**:
    ```bash
-   npm info @heddendorp/angular-http-client
+   npm info @heddendorp/trpc-link-angular
    npm info @heddendorp/tanstack-angular-query
    ```
 
@@ -375,7 +375,7 @@ yarn build --verbose
 
 ## Package-Specific Notes
 
-### angular-http-client
+### trpc-link-angular
 
 - **Purpose**: Provides Angular HttpClient integration for tRPC
 - **Key Files**: `src/angularHttpLink.ts`, `src/httpUtils.ts`

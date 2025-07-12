@@ -387,30 +387,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@heddendorp/angular-http-client@workspace:packages/angular-http-client":
-  version: 0.0.0-use.local
-  resolution: "@heddendorp/angular-http-client@workspace:packages/angular-http-client"
-  dependencies:
-    "@angular/common": "npm:^18.0.0"
-    "@angular/core": "npm:^18.0.0"
-    "@trpc/client": "npm:11.4.3"
-    "@trpc/server": "npm:11.4.3"
-    "@types/node": "npm:^22.13.5"
-    rxjs: "npm:^7.8.0"
-    tsdown: "npm:0.12.7"
-    tslib: "npm:^2.8.1"
-    typescript: "npm:^5.8.2"
-    vitest: "npm:^3.1.2"
-  peerDependencies:
-    "@angular/common": ">=16.0.0"
-    "@angular/core": ">=16.0.0"
-    "@trpc/client": 11.4.3
-    "@trpc/server": 11.4.3
-    rxjs: ">=7.0.0"
-    typescript: ">=5.7.2"
-  languageName: unknown
-  linkType: soft
-
 "@heddendorp/tanstack-angular-query@workspace:packages/tanstack-angular-query":
   version: 0.0.0-use.local
   resolution: "@heddendorp/tanstack-angular-query@workspace:packages/tanstack-angular-query"
@@ -446,6 +422,30 @@ __metadata:
     lerna: "npm:^8.1.2"
     prettier: "npm:^3.3.3"
     typescript: "npm:^5.8.2"
+  languageName: unknown
+  linkType: soft
+
+"@heddendorp/trpc-link-angular@workspace:packages/trpc-link-angular":
+  version: 0.0.0-use.local
+  resolution: "@heddendorp/trpc-link-angular@workspace:packages/trpc-link-angular"
+  dependencies:
+    "@angular/common": "npm:^18.0.0"
+    "@angular/core": "npm:^18.0.0"
+    "@trpc/client": "npm:11.4.3"
+    "@trpc/server": "npm:11.4.3"
+    "@types/node": "npm:^22.13.5"
+    rxjs: "npm:^7.8.0"
+    tsdown: "npm:0.12.7"
+    tslib: "npm:^2.8.1"
+    typescript: "npm:^5.8.2"
+    vitest: "npm:^3.1.2"
+  peerDependencies:
+    "@angular/common": ">=16.0.0"
+    "@angular/core": ">=16.0.0"
+    "@trpc/client": 11.4.3
+    "@trpc/server": 11.4.3
+    rxjs: ">=7.0.0"
+    typescript: ">=5.7.2"
   languageName: unknown
   linkType: soft
 

@@ -6,7 +6,7 @@ This is a monorepo containing Angular-specific tRPC packages that provide seamle
 
 ### Packages
 
-1. **@heddendorp/angular-http-client** (`packages/angular-http-client/`)
+1. **@heddendorp/trpc-link-angular** (`packages/trpc-link-angular/`)
    - Provides Angular HttpClient integration for tRPC
    - Exports `angularHttpLink` function as alternative to `httpLink`
    - Enables Angular HTTP interceptors, error handling, and Observable patterns
@@ -22,13 +22,13 @@ This is a monorepo containing Angular-specific tRPC packages that provide seamle
 
 ### Package Relationship
 - Both packages are complementary but independent
-- `angular-http-client` provides the transport layer (HTTP communication)
+- `trpc-link-angular` provides the transport layer (HTTP communication)
 - `tanstack-angular-query` provides the query layer (caching, state management)
 - They can be used together for a complete Angular-native tRPC solution
 
 ### Integration Pattern
 ```typescript
-// Use angular-http-client for transport
+// Use trpc-link-angular for transport
 const trpcClient = createTRPCClient<AppRouter>({
   links: [
     angularHttpLink({
@@ -65,7 +65,7 @@ provideTRPC(trpcClient);
 ```
 /
 ├── packages/
-│   ├── angular-http-client/
+│   ├── trpc-link-angular/
 │   │   ├── src/
 │   │   │   ├── index.ts          # Main exports
 │   │   │   ├── angularHttpLink.ts # Core implementation
@@ -85,7 +85,7 @@ provideTRPC(trpcClient);
 
 ## Key Features
 
-### angular-http-client
+### trpc-link-angular
 - Full Angular HttpClient integration
 - HTTP interceptors support
 - Error handling with HttpErrorResponse
@@ -163,7 +163,7 @@ provideTRPC(trpcClient);
 1. Add comprehensive test suite
 2. Implement proper linting configuration
 3. Add more detailed examples
-4. Consider adding subscription support to angular-http-client
+4. Consider adding subscription support to trpc-link-angular
 5. Optimize bundle size and tree-shaking
 
 ### Maintenance
