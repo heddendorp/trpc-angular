@@ -1,3 +1,5 @@
+import { HttpClient, HttpHeaders, HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { Observable, Subscription } from 'rxjs';
 import { observable } from '@trpc/server/observable';
 import type {
   AnyClientTypes,
@@ -15,100 +17,12 @@ import {
   type HTTPLinkBaseOptions,
 } from './httpUtils';
 
-// Angular HttpClient interfaces (minimal definitions needed)
-interface AngularHttpClient {
-  get<T = any>(url: string, options?: AngularHttpOptions): AngularObservable<T>;
-  post<T = any>(
-    url: string,
-    body: any,
-    options?: AngularHttpOptions,
-  ): AngularObservable<T>;
-  put<T = any>(
-    url: string,
-    body: any,
-    options?: AngularHttpOptions,
-  ): AngularObservable<T>;
-  patch<T = any>(
-    url: string,
-    body: any,
-    options?: AngularHttpOptions,
-  ): AngularObservable<T>;
-  delete<T = any>(
-    url: string,
-    options?: AngularHttpOptions,
-  ): AngularObservable<T>;
-  head<T = any>(
-    url: string,
-    options?: AngularHttpOptions,
-  ): AngularObservable<T>;
-  options<T = any>(
-    url: string,
-    options?: AngularHttpOptions,
-  ): AngularObservable<T>;
-  request<T = any>(
-    method: string,
-    url: string,
-    options?: AngularHttpOptions & { body?: any },
-  ): AngularObservable<T>;
-}
-
-interface AngularHttpOptions {
-  headers?: Record<string, string | string[]> | AngularHttpHeaders;
-  params?: Record<
-    string,
-    | string
-    | string[]
-    | number
-    | boolean
-    | ReadonlyArray<string | number | boolean>
-  >;
-  observe?: 'body' | 'response' | 'events';
-  responseType?: 'json' | 'text' | 'blob' | 'arraybuffer';
-  reportProgress?: boolean;
-  withCredentials?: boolean;
-}
-
-interface AngularHttpHeaders {
-  has(name: string): boolean;
-  get(name: string): string | null;
-  keys(): string[];
-  getAll(name: string): string[] | null;
-  append(name: string, value: string | string[]): AngularHttpHeaders;
-  set(name: string, value: string | string[]): AngularHttpHeaders;
-  delete(name: string, value?: string | string[]): AngularHttpHeaders;
-}
-
-interface AngularObservable<T> {
-  subscribe(observer: {
-    next?: (value: T) => void;
-    error?: (error: any) => void;
-    complete?: () => void;
-  }): AngularSubscription;
-  subscribe(
-    next?: (value: T) => void,
-    error?: (error: any) => void,
-    complete?: () => void,
-  ): AngularSubscription;
-}
-
-interface AngularSubscription {
-  unsubscribe(): void;
-}
-
-interface AngularHttpResponse<T = any> {
-  body: T;
-  headers: AngularHttpHeaders;
-  status: number;
-  statusText: string;
-  url: string | null;
-}
-
 export type AngularHttpLinkOptions<TRoot extends AnyClientTypes> =
   HTTPLinkBaseOptions<TRoot> & {
     /**
      * Angular HttpClient instance
      */
-    httpClient: AngularHttpClient;
+    httpClient: HttpClient;
     /**
      * Headers to be set on outgoing requests or a callback that returns said headers
      */
@@ -127,7 +41,7 @@ const METHOD = {
  * Angular HttpClient requester function
  */
 function angularHttpRequester(
-  httpClient: AngularHttpClient,
+  httpClient: HttpClient,
   opts: {
     url: string;
     type: 'query' | 'mutation' | 'subscription';
@@ -150,49 +64,35 @@ function angularHttpRequester(
       signal: opts.signal ?? null,
     });
 
-    // Convert headers to Angular format
-    const angularHeaders: Record<string, string> = {};
+    // Convert headers to Angular HttpHeaders
+    let angularHeaders = new HttpHeaders();
     if (opts.headers) {
-      // Check if headers is iterable
-      if (
-        opts.headers &&
-        typeof opts.headers === 'object' &&
-        typeof (opts.headers as any)[Symbol?.iterator] === 'function'
-      ) {
-        // Handle iterable headers
-        for (const [key, value] of opts.headers as any) {
-          angularHeaders[key] = value;
-        }
-      } else {
-        // Handle object headers
-        const headerObj = opts.headers as Record<string, string | string[]>;
-        for (const [key, value] of Object.entries(headerObj)) {
-          if (typeof value === 'string') {
-            angularHeaders[key] = value;
-          } else if (Array.isArray(value)) {
-            angularHeaders[key] = value.join(', ');
-          }
+      const headerObj = opts.headers as Record<string, string | string[]>;
+      for (const [key, value] of Object.entries(headerObj)) {
+        if (typeof value === 'string') {
+          angularHeaders = angularHeaders.set(key, value);
+        } else if (Array.isArray(value)) {
+          angularHeaders = angularHeaders.set(key, value.join(', '));
         }
       }
     }
 
-    // Set content type for POST requests
+    // Set content type for POST/PATCH requests
     if (method === 'POST' || method === 'PATCH') {
-      angularHeaders['Content-Type'] = 'application/json';
+      angularHeaders = angularHeaders.set('Content-Type', 'application/json');
     }
 
-    const requestOptions: AngularHttpOptions = {
+    const requestOptions = {
       headers: angularHeaders,
       observe: 'response' as const,
       responseType: 'json' as const,
     };
 
-    let request: AngularObservable<AngularHttpResponse>;
+    let request$: Observable<HttpResponse<any>>;
 
     if (method === 'GET') {
-      request = httpClient.get(urlWithParams, requestOptions);
+      request$ = httpClient.get(urlWithParams, requestOptions);
     } else if (method === 'POST') {
-      // For POST requests, body comes from getInput if it's not a query or if methodOverride is POST
       let body: string | undefined;
       if (opts.type !== 'query' || opts.methodOverride === 'POST') {
         const input = getInput({
@@ -201,20 +101,20 @@ function angularHttpRequester(
         });
         body = input !== undefined ? JSON.stringify(input) : undefined;
       }
-      request = httpClient.post(urlWithParams, body, requestOptions);
+      request$ = httpClient.post(urlWithParams, body, requestOptions);
     } else if (method === 'PATCH') {
       const input = getInput({
         input: opts.input || undefined,
         transformer: opts.transformer,
       });
       const body = input !== undefined ? JSON.stringify(input) : undefined;
-      request = httpClient.patch(urlWithParams, body, requestOptions);
+      request$ = httpClient.patch(urlWithParams, body, requestOptions);
     } else {
       reject(new Error(`Unsupported HTTP method: ${method}`));
       return;
     }
 
-    let subscription: AngularSubscription | undefined;
+    let subscription: Subscription | undefined;
     let aborted = false;
 
     // Handle abort signal
@@ -235,8 +135,8 @@ function angularHttpRequester(
       opts.signal.addEventListener('abort', onAbort);
     }
 
-    subscription = request.subscribe({
-      next: (response: AngularHttpResponse) => {
+    subscription = request$.subscribe({
+      next: (response: HttpResponse<any>) => {
         if (aborted) return;
 
         const httpResult: HTTPResult = {
@@ -246,7 +146,7 @@ function angularHttpRequester(
               status: response.status,
               statusText: response.statusText,
               headers: response.headers,
-              url: response.url,
+              url: response.url ?? undefined,
               json: async () => response.body,
               text: async () => JSON.stringify(response.body),
             } as any,
@@ -256,12 +156,10 @@ function angularHttpRequester(
 
         resolve(httpResult);
       },
-      error: (error) => {
+      error: (error: any) => {
         if (aborted) return;
 
-        // Handle Angular HTTP errors
-        if (error.status !== undefined) {
-          // Angular HttpErrorResponse
+        if (error instanceof HttpErrorResponse) {
           const httpResult: HTTPResult = {
             json: {
               error: {
@@ -288,8 +186,8 @@ function angularHttpRequester(
               response: {
                 status: error.status,
                 statusText: error.statusText || 'Unknown Error',
-                headers: error.headers || {},
-                url: error.url,
+                headers: error.headers,
+                url: error.url ?? undefined,
                 json: async () => error.error,
                 text: async () => JSON.stringify(error.error),
               } as any,

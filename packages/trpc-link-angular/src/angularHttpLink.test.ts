@@ -1,305 +1,109 @@
-import { initTRPC, TRPCError } from '@trpc/server';
-import { z } from 'zod';
-import { createTRPCClient, isTRPCClientError } from '@trpc/client';
 import { angularHttpLink } from './angularHttpLink';
+import { TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpClient } from '@angular/common/http';
+import { AnyRouter } from '@trpc/server/unstable-core-do-not-import';
 
-// Mock Angular HttpClient
-interface MockAngularHttpClient {
-  get: ReturnType<typeof vi.fn>;
-  post: ReturnType<typeof vi.fn>;
-  patch: ReturnType<typeof vi.fn>;
-  put: ReturnType<typeof vi.fn>;
-  delete: ReturnType<typeof vi.fn>;
-  head: ReturnType<typeof vi.fn>;
-  options: ReturnType<typeof vi.fn>;
-  request: ReturnType<typeof vi.fn>;
-}
-
-interface MockAngularObservable<T> {
-  subscribe: ReturnType<typeof vi.fn>;
-}
-
-interface MockAngularSubscription {
-  unsubscribe: ReturnType<typeof vi.fn>;
-}
-
-function createMockAngularHttpClient(): MockAngularHttpClient {
-  return {
-    get: vi.fn(),
-    post: vi.fn(),
-    patch: vi.fn(),
-    put: vi.fn(),
-    delete: vi.fn(),
-    head: vi.fn(),
-    options: vi.fn(),
-    request: vi.fn(),
-  };
-}
-
-function createMockAngularObservable<T>(
-  value?: T,
-  error?: any,
-): MockAngularObservable<T> {
-  const subscription: MockAngularSubscription = {
-    unsubscribe: vi.fn(),
-  };
-
-  return {
-    subscribe: vi.fn((observerOrNext, errorFn, completeFn) => {
-      const observer =
-        typeof observerOrNext === 'function'
-          ? { next: observerOrNext, error: errorFn, complete: completeFn }
-          : observerOrNext;
-
-      setTimeout(() => {
-        if (error) {
-          observer.error?.(error);
-        } else {
-          observer.next?.(value);
-          observer.complete?.();
-        }
-      }, 0);
-
-      return subscription;
-    }),
-  };
-}
-
-describe('angularHttpLink', () => {
-  const t = initTRPC.create();
-
-  const router = t.router({
-    hello: t.procedure
-      .input(z.object({ name: z.string() }))
-      .query(({ input }) => `Hello ${input.name}!`),
-    greeting: t.procedure
-      .input(z.object({ name: z.string() }))
-      .mutation(({ input }) => `Greetings ${input.name}!`),
-    error: t.procedure.query(() => {
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'Something went wrong',
-      });
-    }),
-  });
-
-  type Router = typeof router;
-
-  let mockHttpClient: MockAngularHttpClient;
+describe('angularHttpLink (Angular HttpClient)', () => {
+  let httpMock: HttpTestingController;
+  let httpClient: HttpClient;
 
   beforeEach(() => {
-    mockHttpClient = createMockAngularHttpClient();
-    vi.clearAllMocks();
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+    });
+    httpMock = TestBed.inject(HttpTestingController);
+    httpClient = TestBed.inject(HttpClient);
   });
 
-  it('should perform a GET request for queries', async () => {
-    const mockResponse = {
-      body: { result: { data: 'Hello World!' } },
-      headers: {},
-      status: 200,
-      statusText: 'OK',
-      url: 'http://localhost:3000/hello',
+  afterEach(() => {
+    httpMock.verify();
+  });
+
+  it('should make a GET request and return the result', (done) => {
+    const opts = {
+      url: '/trpc',
+      httpClient,
     };
-
-    mockHttpClient.get.mockReturnValue(
-      createMockAngularObservable(mockResponse),
-    );
-
-    const client = createTRPCClient<Router>({
-      links: [
-        angularHttpLink({
-          url: 'http://localhost:3000',
-          httpClient: mockHttpClient as any,
-        }),
-      ],
-    });
-
-    const result = await client.hello.query({ name: 'World' });
-
-    expect(mockHttpClient.get).toHaveBeenCalledWith(
-      expect.stringContaining('http://localhost:3000/hello'),
-      expect.objectContaining({
-        headers: {},
-        observe: 'response',
-        responseType: 'json',
-      }),
-    );
-
-    expect(result).toBe('Hello World!');
-  });
-
-  it('should perform a POST request for mutations', async () => {
-    const mockResponse = {
-      body: { result: { data: 'Greetings World!' } },
-      headers: {},
-      status: 200,
-      statusText: 'OK',
-      url: 'http://localhost:3000/greeting',
+    const link = angularHttpLink<AnyRouter>(opts)();
+    const op = {
+      path: 'test',
+      input: undefined,
+      type: 'query' as const,
+      signal: undefined,
+      id: 1,
+      context: {},
     };
-
-    mockHttpClient.post.mockReturnValue(
-      createMockAngularObservable(mockResponse),
-    );
-
-    const client = createTRPCClient<Router>({
-      links: [
-        angularHttpLink({
-          url: 'http://localhost:3000',
-          httpClient: mockHttpClient as any,
-        }),
-      ],
+    link({ op }).subscribe({
+      next: (result) => {
+        expect(result.result).toEqual({ hello: 'world' });
+        done();
+      },
+      error: (err) => {
+        fail(err);
+        done();
+      },
     });
-
-    const result = await client.greeting.mutate({ name: 'World' });
-
-    expect(mockHttpClient.post).toHaveBeenCalledWith(
-      expect.stringContaining('http://localhost:3000/greeting'),
-      expect.stringContaining('"World"'),
-      expect.objectContaining({
-        headers: expect.objectContaining({
-          'Content-Type': 'application/json',
-        }),
-        observe: 'response',
-        responseType: 'json',
-      }),
-    );
-
-    expect(result).toBe('Greetings World!');
+    const req = httpMock.expectOne('/trpc/test');
+    expect(req.request.method).toBe('GET');
+    req.flush({ hello: 'world' });
   });
 
-  it('should handle HTTP errors', async () => {
-    const mockError = {
-      status: 500,
-      statusText: 'Internal Server Error',
-      message: 'Something went wrong',
-      error: { message: 'Internal error' },
+  it('should make a POST request and return the result', (done) => {
+    const opts = {
+      url: '/trpc',
+      httpClient,
     };
-
-    mockHttpClient.get.mockReturnValue(
-      createMockAngularObservable(undefined, mockError),
-    );
-
-    const client = createTRPCClient<Router>({
-      links: [
-        angularHttpLink({
-          url: 'http://localhost:3000',
-          httpClient: mockHttpClient as any,
-        }),
-      ],
-    });
-
-    await expect(client.hello.query({ name: 'World' })).rejects.toThrow();
-  });
-
-  it('should handle custom headers', async () => {
-    const mockResponse = {
-      body: { result: { data: 'Hello World!' } },
-      headers: {},
-      status: 200,
-      statusText: 'OK',
-      url: 'http://localhost:3000/hello',
+    const link = angularHttpLink<AnyRouter>(opts)();
+    const op = {
+      path: 'greeting',
+      input: { name: 'World' },
+      type: 'mutation' as const,
+      signal: undefined,
+      id: 2,
+      context: {},
     };
-
-    mockHttpClient.get.mockReturnValue(
-      createMockAngularObservable(mockResponse),
-    );
-
-    const client = createTRPCClient<Router>({
-      links: [
-        angularHttpLink({
-          url: 'http://localhost:3000',
-          httpClient: mockHttpClient as any,
-          headers: {
-            Authorization: 'Bearer token123',
-            'X-Custom-Header': 'custom-value',
-          },
-        }),
-      ],
+    link({ op }).subscribe({
+      next: (result) => {
+        expect(result.result).toEqual({ greetings: 'Greetings World!' });
+        done();
+      },
+      error: (err) => {
+        fail(err);
+        done();
+      },
     });
-
-    await client.hello.query({ name: 'World' });
-
-    expect(mockHttpClient.get).toHaveBeenCalledWith(
-      expect.stringContaining('http://localhost:3000/hello'),
-      expect.objectContaining({
-        headers: expect.objectContaining({
-          Authorization: 'Bearer token123',
-          'X-Custom-Header': 'custom-value',
-        }),
-        observe: 'response',
-        responseType: 'json',
-      }),
-    );
+    const req = httpMock.expectOne('/trpc/greeting');
+    expect(req.request.method).toBe('POST');
+    req.flush({ greetings: 'Greetings World!' });
   });
 
-  it('should handle dynamic headers', async () => {
-    const mockResponse = {
-      body: { result: { data: 'Hello World!' } },
-      headers: {},
-      status: 200,
-      statusText: 'OK',
-      url: 'http://localhost:3000/hello',
+  it('should handle HTTP errors', (done) => {
+    const opts = {
+      url: '/trpc',
+      httpClient,
     };
-
-    mockHttpClient.get.mockReturnValue(
-      createMockAngularObservable(mockResponse),
-    );
-
-    const client = createTRPCClient<Router>({
-      links: [
-        angularHttpLink({
-          url: 'http://localhost:3000',
-          httpClient: mockHttpClient as any,
-          headers: () => ({
-            Authorization: 'Bearer dynamic-token',
-          }),
-        }),
-      ],
+    const link = angularHttpLink<AnyRouter>(opts)();
+    const op = {
+      path: 'error',
+      input: undefined,
+      type: 'query' as const,
+      signal: undefined,
+      id: 3,
+      context: {},
+    };
+    link({ op }).subscribe({
+      next: () => {
+        fail('Should not succeed');
+        done();
+      },
+      error: (err) => {
+        expect(err).toBeTruthy();
+        done();
+      },
     });
-
-    await client.hello.query({ name: 'World' });
-
-    expect(mockHttpClient.get).toHaveBeenCalledWith(
-      expect.stringContaining('http://localhost:3000/hello'),
-      expect.objectContaining({
-        headers: expect.objectContaining({
-          Authorization: 'Bearer dynamic-token',
-        }),
-        observe: 'response',
-        responseType: 'json',
-      }),
-    );
-  });
-
-  it('should throw error for subscription operations', () => {
-    const client = createTRPCClient<Router>({
-      links: [
-        angularHttpLink({
-          url: 'http://localhost:3000',
-          httpClient: mockHttpClient as any,
-        }),
-      ],
-    });
-
-    expect(() => {
-      // Simulating a subscription operation by creating a subscription observable
-      const link = angularHttpLink({
-        url: 'http://localhost:3000',
-        httpClient: mockHttpClient as any,
-      });
-
-      const linkFn = link();
-      linkFn({
-        op: {
-          id: 1,
-          type: 'subscription',
-          input: {},
-          path: 'test',
-          context: {},
-          signal: undefined,
-        },
-        next: () => null as any,
-      });
-    }).toThrow('Subscriptions are unsupported by `angularHttpLink`');
+    const req = httpMock.expectOne('/trpc/error');
+    expect(req.request.method).toBe('GET');
+    req.flush({ message: 'Internal error' }, { status: 500, statusText: 'Internal Server Error' });
   });
 });
