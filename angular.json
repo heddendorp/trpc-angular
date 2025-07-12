@@ -1,0 +1,62 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": {
+    "packageManager": "yarn"
+  },
+  "newProjectRoot": "projects",
+  "projects": {
+    "trpc-link-angular": {
+      "projectType": "library",
+      "root": "projects/trpc-link-angular",
+      "sourceRoot": "projects/trpc-link-angular/src",
+      "prefix": "trpc",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/trpc-link-angular/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/trpc-link-angular/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:karma",
+          "options": {
+            "tsConfig": "projects/trpc-link-angular/tsconfig.spec.json"
+          }
+        }
+      }
+    },
+    "tanstack-angular-query": {
+      "projectType": "library",
+      "root": "projects/tanstack-angular-query",
+      "sourceRoot": "projects/tanstack-angular-query/src",
+      "prefix": "tanstack",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/tanstack-angular-query/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/tanstack-angular-query/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:karma",
+          "options": {
+            "tsConfig": "projects/tanstack-angular-query/tsconfig.spec.json"
+          }
+        }
+      }
+    }
+  }
+}

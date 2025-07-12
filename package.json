@@ -1,31 +1,47 @@
 {
   "name": "@heddendorp/trpc-angular",
   "private": true,
-  "type": "module",
+  "version": "0.0.0",
   "engines": {
     "node": ">=18.0.0",
     "yarn": "^4.3.0"
   },
   "packageManager": "yarn@4.3.1",
-  "workspaces": [
-    "packages/*"
-  ],
   "scripts": {
-    "build": "yarn workspaces foreach -A run build",
-    "dev": "yarn workspaces foreach -A run dev",
-    "test": "yarn workspaces foreach -A run test",
-    "lint": "yarn workspaces foreach -A run lint",
-    "lint-fix": "yarn workspaces foreach -A run lint -- --fix && yarn format-fix",
+    "build": "ng build trpc-link-angular && ng build tanstack-angular-query",
+    "test": "ng test",
+    "lint": "ng lint",
     "format": "prettier \"**/*\" --ignore-unknown",
-    "format-fix": "yarn format --write --list-different",
-    "clean": "find . -name node_modules -o -name dist -type d -prune | xargs rm -rf",
-    "prepublishOnly": "yarn build",
-    "publish": "lerna publish"
+    "format-fix": "yarn format --write --list-different"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
   },
   "devDependencies": {
+    "@angular-devkit/build-angular": "^20.1.0",
+    "@angular/build": "^20.1.0",
+    "@angular/cli": "^20.1.0",
+    "@angular/common": "^20.1.0",
+    "@angular/compiler": "^20.1.0",
+    "@angular/compiler-cli": "^20.1.0",
+    "@angular/core": "^20.1.0",
+    "@angular/platform-browser": "^20.1.0",
+    "@angular/platform-browser-dynamic": "^20.1.0",
+    "@trpc/client": "^11.4.3",
+    "@trpc/server": "^11.4.3",
+    "@types/jasmine": "~5.1.0",
     "@types/node": "^22.13.5",
+    "jasmine-core": "~5.4.0",
+    "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.2.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.1.0",
     "lerna": "^8.1.2",
+    "ng-packagr": "^20.1.0",
     "prettier": "^3.3.3",
-    "typescript": "^5.8.2"
+    "rxjs": "^7.8.0",
+    "typescript": "^5.8.2",
+    "zone.js": "^0.15.0"
   }
 }
