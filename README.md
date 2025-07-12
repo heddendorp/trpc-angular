@@ -1,71 +1,118 @@
-# tRPC Angular Packages
+# tRPC Angular
 
-This repository contains two Angular packages for tRPC:
+[![npm version](https://badge.fury.io/js/@heddendorp/trpc-link-angular.svg)](https://badge.fury.io/js/@heddendorp/trpc-link-angular)
+[![npm version](https://badge.fury.io/js/@heddendorp/tanstack-angular-query.svg)](https://badge.fury.io/js/@heddendorp/tanstack-angular-query)
 
-- `@heddendorp/trpc-link-angular` - Angular HttpClient link for tRPC client
-- `@heddendorp/tanstack-angular-query` - TanStack Angular Query Integration for tRPC
+A collection of Angular libraries for tRPC integration, built with Angular 20 and modern tooling.
 
-## Overview
+## Libraries
 
-These packages have been extracted from the main tRPC repository and simplified for easier maintenance and publishing to the `@heddendorp` npm scope.
+### 🚀 @heddendorp/trpc-link-angular
 
-## Packages
+A fully functional Angular HttpClient link for tRPC client that allows seamless integration between tRPC and Angular applications.
 
-### @heddendorp/trpc-link-angular
+**Features:**
+- ✅ Angular HttpClient integration
+- ✅ Full HTTP method support (GET, POST, PATCH)
+- ✅ Headers and error handling
+- ✅ AbortSignal support
+- ✅ TypeScript strict mode
+- ✅ Angular 20 compatibility
 
-An Angular HttpClient link for tRPC client that allows you to use Angular's HttpClient with tRPC.
+**Installation:**
+```bash
+npm install @heddendorp/trpc-link-angular
+# or
+yarn add @heddendorp/trpc-link-angular
+```
 
-- **Location**: `packages/trpc-link-angular`
-- **Main Purpose**: Provides HTTP transport for tRPC client using Angular's HttpClient
-- **Peer Dependencies**:
-  - `@angular/common >=16.0.0`
-  - `@angular/core >=16.0.0`
-  - `@trpc/client 11.4.3`
-  - `@trpc/server 11.4.3`
-  - `rxjs >=7.0.0`
+**Usage:**
+```typescript
+import { angularHttpLink } from '@heddendorp/trpc-link-angular';
+import { HttpClient } from '@angular/common/http';
 
-### @heddendorp/tanstack-angular-query
+// In your component or service
+constructor(private httpClient: HttpClient) {}
 
-TanStack Angular Query Integration for tRPC that provides reactive query capabilities for Angular applications.
+const trpcClient = createTRPCClient({
+  links: [
+    angularHttpLink({
+      url: 'http://localhost:3000/trpc',
+      httpClient: this.httpClient,
+    }),
+  ],
+});
+```
 
-- **Location**: `packages/tanstack-angular-query`
-- **Main Purpose**: Integrates tRPC with TanStack Angular Query for reactive data fetching
-- **Peer Dependencies**:
-  - `@angular/core >=16.0.0`
-  - `@tanstack/angular-query-experimental >=5.80.3`
-  - `@trpc/client 11.4.3`
-  - `@trpc/server 11.4.3`
+### ⚠️ @heddendorp/tanstack-angular-query
+
+A placeholder implementation for TanStack Angular Query integration with tRPC.
+
+**Current Status:** This library is currently a placeholder due to API compatibility issues with tRPC 11.4.3 and TanStack Query 5.80.3+. The original implementation needs to be updated to work with the latest versions of these dependencies.
+
+**Installation:**
+```bash
+npm install @heddendorp/tanstack-angular-query
+# or
+yarn add @heddendorp/tanstack-angular-query
+```
+
+**Note:** This library will throw informative errors when used, indicating that the implementation is incomplete.
 
 ## Development
 
+This repository is structured as an Angular 20 workspace with two libraries:
+
 ### Prerequisites
-
 - Node.js 18+
-- Yarn 4.x
+- Yarn 4.3+
+- Angular CLI 20+
 
-### Installation
-
+### Setup
 ```bash
+# Install dependencies
 yarn install
-```
 
-### Building
-
-```bash
+# Build all libraries
 yarn build
+
+# Run tests
+ng test trpc-link-angular
+ng test tanstack-angular-query
 ```
 
-### Running Tests
-
-```bash
-yarn test
+### Project Structure
+```
+├── projects/
+│   ├── trpc-link-angular/          # Fully functional tRPC Angular link
+│   │   ├── src/
+│   │   │   ├── lib/
+│   │   │   │   ├── trpc-link-angular.ts
+│   │   │   │   ├── http-utils.ts
+│   │   │   │   └── *.spec.ts
+│   │   │   └── public-api.ts
+│   │   └── package.json
+│   └── tanstack-angular-query/     # Placeholder implementation
+│       ├── src/
+│       │   ├── lib/
+│       │   │   ├── tanstack-angular-query.ts
+│       │   │   └── *.spec.ts
+│       │   └── public-api.ts
+│       └── package.json
+├── angular.json
+├── package.json
+└── tsconfig.json
 ```
 
-### Publishing
+## Migration from Previous Version
 
-```bash
-yarn publish
-```
+This repository was migrated from a tsdown/lerna-based build system to Angular CLI 20 workspace structure. The migration includes:
+
+- ✅ Modern Angular 20 workspace structure
+- ✅ Angular CLI build system
+- ✅ Proper TypeScript configuration
+- ✅ Karma/Jasmine testing setup
+- ✅ Consistent package management with Yarn
 
 ## Context7 Integration
 
@@ -89,22 +136,23 @@ Create an Angular service that uses tRPC with HttpClient. use context7
 Set up TanStack Angular Query with tRPC in an Angular 16+ app. use context7
 ```
 
-## GitHub Actions
+## Contributing
 
-The repository includes a simplified CI/CD pipeline:
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Ensure all tests pass
+6. Submit a pull request
 
-- **CI**: Runs on push to main/next branches and PRs
-- **Publishing**: Automatically publishes packages to npm when changes are pushed to main
+## License
 
-## Architecture
+MIT
 
-The repository is structured as a monorepo with:
+## Support
 
-- **Root**: Contains shared configuration and scripts
-- **packages/**: Contains the two Angular packages
-- **Build System**: Uses `tsdown` for building TypeScript packages
-- **Package Manager**: Uses `yarn` with workspaces
-- **Publishing**: Uses `lerna` for coordinated publishing
+- [GitHub Issues](https://github.com/heddendorp/trpc-angular/issues)
+- [Documentation](https://github.com/heddendorp/trpc-angular#readme)
 
 ## Star History
 

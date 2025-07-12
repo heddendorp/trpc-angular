@@ -1,8 +1,0 @@
-{
-  "version": "0.1.2-alpha.0",
-  "npmClient": "yarn",
-  "$schema": "node_modules/lerna/schemas/lerna-schema.json",
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
-  }
-}

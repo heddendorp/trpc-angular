@@ -1,0 +1,48 @@
+/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
+/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "preserve",
+    "paths": {
+      "tanstack-angular-query": [
+        "./dist/tanstack-angular-query"
+      ],
+      "trpc-link-angular": [
+        "./dist/trpc-link-angular"
+      ]
+    }
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "typeCheckHostBindings": true,
+    "strictTemplates": true
+  },
+  "files": [],
+  "references": [
+    {
+      "path": "./projects/trpc-link-angular/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/trpc-link-angular/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/tanstack-angular-query/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/tanstack-angular-query/tsconfig.spec.json"
+    }
+  ]
+}
