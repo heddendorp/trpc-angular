@@ -20,28 +20,59 @@ export const TRPC_OPTIONS_PROXY = new InjectionToken<
 >('TRPC_OPTIONS_PROXY');
 
 /**
+ * Factory function marker interface
+ */
+export interface TRPCClientFactory<TRouter extends AnyTRPCRouter> {
+  (): TRPCClient<TRouter>;
+  __isTRPCClientFactory?: boolean;
+}
+
+/**
+ * Creates a factory function that can be used with provideTRPC
+ */
+export function createTRPCClientFactory<TRouter extends AnyTRPCRouter>(
+  factory: () => TRPCClient<TRouter>
+): TRPCClientFactory<TRouter> {
+  const factoryFn = factory as TRPCClientFactory<TRouter>;
+  factoryFn.__isTRPCClientFactory = true;
+  return factoryFn;
+}
+
+/**
  * Provides tRPC client and options proxy for Angular applications
  *
-
+ * @param clientOrFactory - Either a pre-created tRPC client or a factory function that creates one
+ * @param queryClient - Optional query client instance
  */
 export function provideTRPC<TRouter extends AnyTRPCRouter>(
-  client: TRPCClient<TRouter>,
+  clientOrFactory: TRPCClient<TRouter> | TRPCClientFactory<TRouter>,
   queryClient?: QueryClient,
 ): EnvironmentProviders {
   return makeEnvironmentProviders([
     {
       provide: TRPC_CLIENT,
-      useValue: client,
+      useFactory: () => {
+        const isFactory = (clientOrFactory as any).__isTRPCClientFactory === true;
+        
+        if (isFactory) {
+          return (clientOrFactory as TRPCClientFactory<TRouter>)();
+        }
+        return clientOrFactory as TRPCClient<TRouter>;
+      },
     },
     {
       provide: TRPC_OPTIONS_PROXY,
-      useFactory: () => {
+      useFactory: (client: TRPCClient<TRouter>) => {
+        if (!client) {
+          throw new Error('TRPCClient is undefined. Check your provideTRPC configuration.');
+        }
         const qc = queryClient ?? inject(QueryClientService);
         return createTRPCOptionsProxy({
           client,
           queryClient: qc,
         });
       },
+      deps: [TRPC_CLIENT],
     },
   ]);
 }

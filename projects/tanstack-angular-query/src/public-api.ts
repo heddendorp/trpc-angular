@@ -4,10 +4,12 @@
 
 export {
   provideTRPC,
+  createTRPCClientFactory,
   injectTRPC,
   injectTRPCClient,
   createTRPCInjectors,
 } from './lib/context';
+export type { TRPCClientFactory } from './lib/context';
 export type {
   TRPCOptionsProxy,
   inferInput,
