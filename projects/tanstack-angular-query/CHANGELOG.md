@@ -1,5 +1,11 @@
 # @heddendorp/tanstack-angular-query
 
+## 0.0.5
+
+### Patch Changes
+
+- aaafa89: Allow direct usage of queryOptions()
+
 ## 0.0.4
 
 ### Patch Changes
