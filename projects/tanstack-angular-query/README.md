@@ -70,11 +70,14 @@ import { injectQuery } from '@tanstack/angular-query-experimental';
 export class ExampleComponent {
   private trpc = injectTRPC();
   
-  query = injectQuery(
+  // ✅ RECOMMENDED: Use functional pattern with injectQuery
+  query = injectQuery(() => 
     this.trpc.hello.queryOptions({ text: 'World' })
   );
 }
 ```
+
+> **Important**: Always use the functional pattern `() => trpc.proc.queryOptions()` with `injectQuery`. For detailed usage patterns and troubleshooting, see [USAGE.md](./USAGE.md).
 
 ### 4. Mutations
 
@@ -97,7 +100,7 @@ import { injectMutation } from '@tanstack/angular-query-experimental';
 export class MutationExampleComponent {
   private trpc = injectTRPC();
   
-  mutation = injectMutation(
+  mutation = injectMutation(() => this.trpc.createPost.mutationOptions());
     this.trpc.createPost.mutationOptions()
   );
 }
