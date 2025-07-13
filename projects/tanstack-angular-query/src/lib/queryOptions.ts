@@ -114,7 +114,16 @@ export interface TRPCQueryOptions<TDef extends ResolverDef> {
       transformer: TDef['transformer'];
       errorShape: TDef['errorShape'];
     }>
-  >;
+  > & {
+    (): DefinedTRPCQueryOptionsOut<
+      TQueryFnData,
+      TData,
+      TRPCClientErrorLike<{
+        transformer: TDef['transformer'];
+        errorShape: TDef['errorShape'];
+      }>
+    >;
+  };
   <TQueryFnData extends TDef['output'], TData = TQueryFnData>(
     input: TDef['input'],
     opts?: UnusedSkipTokenTRPCQueryOptionsIn<
@@ -132,7 +141,16 @@ export interface TRPCQueryOptions<TDef extends ResolverDef> {
       transformer: TDef['transformer'];
       errorShape: TDef['errorShape'];
     }>
-  >;
+  > & {
+    (): UnusedSkipTokenTRPCQueryOptionsOut<
+      TQueryFnData,
+      TData,
+      TRPCClientErrorLike<{
+        transformer: TDef['transformer'];
+        errorShape: TDef['errorShape'];
+      }>
+    >;
+  };
   <TQueryFnData extends TDef['output'], TData = TQueryFnData>(
     input: TDef['input'],
     opts?: UndefinedTRPCQueryOptionsIn<
@@ -150,7 +168,16 @@ export interface TRPCQueryOptions<TDef extends ResolverDef> {
       transformer: TDef['transformer'];
       errorShape: TDef['errorShape'];
     }>
-  >;
+  > & {
+    (): UndefinedTRPCQueryOptionsOut<
+      TQueryFnData,
+      TData,
+      TRPCClientErrorLike<{
+        transformer: TDef['transformer'];
+        errorShape: TDef['errorShape'];
+      }>
+    >;
+  };
 }
 
 type AnyTRPCQueryOptionsIn =
@@ -201,7 +228,7 @@ export function trpcQueryOptions(args: {
     return result;
   };
 
-  return Object.assign(
+  const queryOptionsResult = Object.assign(
     queryOptions({
       ...opts,
       queryKey,
@@ -209,4 +236,10 @@ export function trpcQueryOptions(args: {
     }),
     { trpc: createTRPCOptionsResult({ path }) },
   );
+
+  // Create a function that returns the query options for injectQuery compatibility
+  const queryOptionsFunction = () => queryOptionsResult;
+
+  // Copy all properties from queryOptions to the function so it can be used directly or called
+  return Object.assign(queryOptionsFunction, queryOptionsResult);
 }
