@@ -198,7 +198,7 @@ export function injectTRPCSubscription<TOutput, TError>(
       },
       onData: (data) => {
         statusSignal.set('pending');
-        dataSignal.set(data);
+        dataSignal.set(data as TOutput);
         subscriptionOptions.onData?.(data);
       },
       onError: (error) => {

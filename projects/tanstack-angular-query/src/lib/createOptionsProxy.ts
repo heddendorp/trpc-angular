@@ -317,49 +317,52 @@ export function createTRPCOptionsProxy<TRouter extends AnyTRPCRouter>(
 
   const client = (() => {
     if ('client' in opts) {
-      return getUntypedClient(opts.client);
+      return getUntypedClient(opts.client as TRPCClient<TRouter>);
     }
 
     return {
-      query: (path: string, input: unknown, options?: TRPCRequestOptions) => {
+      query: async (path: string, input: unknown, options?: TRPCRequestOptions) => {
+        const ctx = typeof opts.ctx === 'function' ? await (opts.ctx as any)() : opts.ctx;
         return callTRPCProcedure({
           path,
-          input,
+          getRawInput: async () => input,
           router: opts.router,
-          ctx: typeof opts.ctx === 'function' ? opts.ctx() : opts.ctx,
+          ctx,
           type: 'query',
           signal: options?.signal,
         });
       },
-      mutation: (
+      mutation: async (
         path: string,
         input: unknown,
         options?: TRPCRequestOptions,
       ) => {
+        const ctx = typeof opts.ctx === 'function' ? await (opts.ctx as any)() : opts.ctx;
         return callTRPCProcedure({
           path,
-          input,
+          getRawInput: async () => input,
           router: opts.router,
-          ctx: typeof opts.ctx === 'function' ? opts.ctx() : opts.ctx,
+          ctx,
           type: 'mutation',
           signal: options?.signal,
         });
       },
-      subscription: (
+      subscription: async (
         path: string,
         input: unknown,
         options?: TRPCRequestOptions,
       ) => {
+        const ctx = typeof opts.ctx === 'function' ? await (opts.ctx as any)() : opts.ctx;
         return callTRPCProcedure({
           path,
-          input,
+          getRawInput: async () => input,
           router: opts.router,
-          ctx: typeof opts.ctx === 'function' ? opts.ctx() : opts.ctx,
+          ctx,
           type: 'subscription',
           signal: options?.signal,
         });
       },
-    } as TRPCUntypedClient<TRouter>;
+    } as unknown as TRPCUntypedClient<TRouter>;
   })();
 
   return createTRPCRecursiveProxy(({ path, args }) => {
@@ -384,7 +387,7 @@ export function createTRPCOptionsProxy<TRouter extends AnyTRPCRouter>(
         queryClient,
         path: pathCopy,
         queryKey,
-        opts,
+        opts: opts as any,
       });
     }
 
@@ -396,7 +399,7 @@ export function createTRPCOptionsProxy<TRouter extends AnyTRPCRouter>(
         queryClient,
         path: pathCopy,
         queryKey: getQueryKeyInternal(pathCopy, input, 'infinite'),
-        opts,
+        opts: opts as any,
       });
     }
 
@@ -407,7 +410,7 @@ export function createTRPCOptionsProxy<TRouter extends AnyTRPCRouter>(
         queryClient,
         path: pathCopy,
         mutationKey,
-        opts,
+        opts: opts as any,
       });
     }
 
@@ -418,7 +421,7 @@ export function createTRPCOptionsProxy<TRouter extends AnyTRPCRouter>(
         subscribe: subscribeFn,
         path: pathCopy,
         queryKey,
-        opts,
+        opts: opts as any,
       });
     }
 
@@ -436,14 +439,14 @@ export function createTRPCOptionsProxy<TRouter extends AnyTRPCRouter>(
 
     if (lastPart === 'queryFilter') {
       return {
-        ...opts,
+        ...(opts as any),
         queryKey: getQueryKeyInternal(pathCopy, input, 'query'),
       };
     }
 
     if (lastPart === 'infiniteQueryFilter') {
       return {
-        ...opts,
+        ...(opts as any),
         queryKey: getQueryKeyInternal(pathCopy, input, 'infinite'),
       };
     }
@@ -454,14 +457,15 @@ export function createTRPCOptionsProxy<TRouter extends AnyTRPCRouter>(
 
     if (lastPart === 'pathFilter') {
       return {
-        ...input,
+        ...(input as any),
         queryKey: getQueryKeyInternal(pathCopy, undefined, 'any'),
       };
     }
 
     // If we reach here, continue building the path
     return createTRPCRecursiveProxy(({ path: nextPath, args: nextArgs }) => {
-      return createTRPCOptionsProxy(opts)({
+      const proxy = createTRPCOptionsProxy(opts as TRPCOptionsProxyOptions<TRouter>);
+      return (proxy as any)({
         path: [...path, ...nextPath],
         args: nextArgs,
       });
