@@ -1,25 +1,41 @@
-*.log
-.DS_Store
-dist/
-.next/
-.turbo/
-.vercel/
-.vinxi/
-.output/
-.eslintcache
-*.tsbuildinfo
-app.config.timestamp_*
+# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
-db.sqlite
+# Compiled output
+/dist
+/tmp
+/out-tsc
+/bazel-out
 
-node_modules/
-package-lock.json
-.yalc
-yalc.lock
+# Node
+/node_modules
+npm-debug.log
+yarn-error.log
 
-tests-results/
-coverage/
-__generated__/
+# IDEs and editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+
+# Miscellaneous
+/.angular/cache
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
 
 .pnp.*
 .yarn/*
@@ -29,15 +45,6 @@ __generated__/
 !.yarn/sdks
 !.yarn/versions
 
-
-# Ignore all folders except `src/` and `tests/` in every published package
-packages/*/*/
-!packages/*/src/
-!packages/*/test/
-!packages/*/__tests__/
-!packages/*/examples/
-# and all folders inside `tests` package, which is handled separately
-!packages/tests/*/
-packages/tests/node_modules
-
-examples/next-big-router/src/server/routers
+# System files
+.DS_Store
+Thumbs.db

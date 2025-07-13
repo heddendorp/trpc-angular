@@ -1,0 +1,66 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": {
+    "packageManager": "yarn"
+  },
+  "newProjectRoot": "projects",
+  "projects": {
+    "trpcLinkAngular": {
+      "projectType": "library",
+      "root": "projects/trpc-link-angular",
+      "sourceRoot": "projects/trpc-link-angular/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/trpc-link-angular/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/trpc-link-angular/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/trpc-link-angular/tsconfig.spec.json",
+            "buildTarget": "::development",
+            "runner": "vitest"
+          }
+        }
+      }
+    },
+    "tanstackAngularQuery": {
+      "projectType": "library",
+      "root": "projects/tanstack-angular-query",
+      "sourceRoot": "projects/tanstack-angular-query/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/tanstack-angular-query/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/tanstack-angular-query/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/tanstack-angular-query/tsconfig.spec.json",
+            "buildTarget": "::development",
+            "runner": "vitest"
+          }
+        }
+      }
+    }
+  }
+}
