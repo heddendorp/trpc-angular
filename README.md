@@ -1,59 +1,94 @@
-# TrpcAngular
+# tRPC Angular
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.0.
+This repository contains two Angular packages for tRPC:
 
-## Development server
+- `@heddendorp/trpc-link-angular` - Angular HttpClient link for tRPC client
+- `@heddendorp/tanstack-angular-query` - TanStack Angular Query Integration for tRPC
 
-To start a local development server, run:
+## Overview
+
+These packages have been extracted from the main tRPC repository and simplified for Angular-specific use cases.
+
+## Packages
+
+### @heddendorp/trpc-link-angular
+
+An Angular HttpClient link for tRPC client that allows you to use Angular's HttpClient with tRPC.
+
+- **Location**: `projects/trpc-link-angular`
+- **Main Purpose**: Provides HTTP transport for tRPC client using Angular's HttpClient
+- **Peer Dependencies**:
+  - `@angular/common >=16.0.0`
+  - `@angular/core >=16.0.0`
+  - `@trpc/client 11.4.3`
+  - `@trpc/server 11.4.3`
+  - `rxjs >=7.0.0`
+  - `typescript >=5.7.2`
+
+### @heddendorp/tanstack-angular-query
+
+TanStack Angular Query integration for tRPC that provides reactive data fetching capabilities.
+
+- **Location**: `projects/tanstack-angular-query`
+- **Main Purpose**: Provides TanStack Query integration for tRPC with Angular-specific features
+- **Peer Dependencies**:
+  - `@angular/common >=16.0.0`
+  - `@angular/core >=16.0.0`
+  - `@tanstack/angular-query-experimental ^5.83.0`
+  - `@trpc/client 11.4.3`
+  - `@trpc/server 11.4.3`
+  - `rxjs >=7.0.0`
+  - `typescript >=5.7.2`
+
+## Development
+
+### Installation
+
+```bash
+yarn install
+```
+
+### Building
+
+To build all packages:
+
+```bash
+yarn build
+```
+
+To build a specific package:
+
+```bash
+ng build trpc-link-angular
+ng build tanstack-angular-query
+```
+
+### Development server
+
+To start a local development server:
 
 ```bash
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+### Running tests
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+To execute unit tests:
 
 ```bash
 ng test
 ```
 
-## Running end-to-end tests
+## Documentation
 
-For end-to-end (e2e) testing, run:
+- [Integration Guide](examples/integration-guide.md) - How to use both packages together
+- [Standalone Examples](examples/) - Individual package examples
+- [Maintenance Guide](MAINTENANCE_GUIDE.md) - Development and publishing workflow
 
-```bash
-ng e2e
-```
+## Contributing
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Please see the [Maintenance Guide](MAINTENANCE_GUIDE.md) for information on contributing to this project.
 
-## Additional Resources
+## License
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+This project is licensed under the MIT License.
