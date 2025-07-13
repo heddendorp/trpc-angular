@@ -206,53 +206,57 @@ To add proper tests:
 
 ## Publishing
 
-### Automated Publishing with Semantic Release
+### Automated Publishing with Changesets
 
-This project uses [semantic-release](https://github.com/semantic-release/semantic-release) for automated version management and publishing.
+This project uses [Changesets](https://github.com/changesets/changesets) for automated version management and publishing.
 
 #### How it works:
 
-1. **Commit messages** follow the [Conventional Commits](https://www.conventionalcommits.org/) format
-2. **Semantic-release** analyzes commit messages to determine version bumps
-3. **GitHub Actions** automatically publishes packages on push to main branch
+1. **Changeset files** are created to describe changes and their impact
+2. **Changesets** analyzes these files to determine version bumps
+3. **GitHub Actions** automatically publishes packages when changesets are merged to main
 4. **Changelog** and **GitHub releases** are automatically generated
 
-#### Commit Message Format:
-
-```
-type(scope): description
-
-[optional body]
-
-[optional footer]
-```
-
-**Types:**
-- `feat`: New feature (minor version bump)
-- `fix`: Bug fix (patch version bump)
-- `docs`: Documentation only changes
-- `style`: Code style changes (formatting, etc.)
-- `refactor`: Code refactoring
-- `test`: Adding or updating tests
-- `chore`: Maintenance tasks
-
-**Breaking Changes:**
-- Add `BREAKING CHANGE:` in the commit footer
-- Or use `feat!:` or `fix!:` for major version bump
-
-#### Examples:
+#### Creating a changeset:
 
 ```bash
-# Patch version bump
-git commit -m "fix: resolve HTTP interceptor issue"
+# Create a changeset describing your changes
+yarn changeset
 
-# Minor version bump
+# This will prompt you to:
+# 1. Select which packages are affected
+# 2. Choose the type of change (major, minor, patch)
+# 3. Write a summary of the changes
+```
+
+#### Changeset Types:
+
+- **Major**: Breaking changes (e.g., API changes, removed features)
+- **Minor**: New features, enhancements (backwards compatible)
+- **Patch**: Bug fixes, small improvements
+
+#### Example workflow:
+
+```bash
+# 1. Make your changes
+git checkout -b feature/new-feature
+# ... make changes ...
+
+# 2. Create a changeset
+yarn changeset
+# Select packages: @heddendorp/trpc-link-angular
+# Change type: minor
+# Summary: "Add new query hook for mutations"
+
+# 3. Commit and push
+git add .
 git commit -m "feat: add new query hook for mutations"
+git push origin feature/new-feature
 
-# Major version bump
-git commit -m "feat!: change API signature
-
-BREAKING CHANGE: The angularHttpLink function now requires HttpClient as a parameter"
+# 4. Create PR - the changeset file will be included
+# 5. Merge PR to main
+# 6. Changesets action will create a "Version Packages" PR
+# 7. Merge the version PR to trigger release
 ```
 
 ### Manual Publishing
@@ -260,24 +264,27 @@ BREAKING CHANGE: The angularHttpLink function now requires HttpClient as a param
 If needed, publish packages individually:
 
 ```bash
+# Build first
+yarn build
+
+# Publish individual packages
 cd dist/trpc-link-angular
-npm publish
+npm publish --access public
 
 cd ../tanstack-angular-query
-npm publish
+npm publish --access public
 ```
 
 ### Release Process
 
 1. **Create feature branch** and make changes
-2. **Follow conventional commits** for all commit messages
-3. **Create PR** and merge to main
-4. **Semantic-release** runs automatically and:
-   - Analyzes commits since last release
-   - Generates changelog
-   - Bumps version numbers
-   - Creates GitHub release
-   - Publishes to npm (if version changed)
+2. **Create changeset** using `yarn changeset`
+3. **Create PR** and merge to main (changeset file included)
+4. **Changesets action** creates a "Version Packages" PR with:
+   - Updated version numbers
+   - Generated changelog entries
+   - Updated package.json files
+5. **Merge version PR** to trigger automatic publishing to npm
 
 ### Pre-publishing Checklist
 

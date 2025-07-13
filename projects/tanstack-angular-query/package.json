@@ -1,10 +1,25 @@
 {
-  "name": "tanstack-angular-query",
+  "name": "@heddendorp/tanstack-angular-query",
   "version": "0.0.1",
+  "description": "TanStack Angular Query integration for tRPC",
+  "main": "index.js",
+  "module": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "build": "ng build tanstackAngularQuery",
     "test": "ng test tanstackAngularQuery",
     "lint": "ng lint tanstackAngularQuery"
+  },
+  "keywords": ["trpc", "angular", "tanstack", "query", "react-query"],
+  "author": "heddendorp",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/heddendorp/trpc-angular.git",
+    "directory": "projects/tanstack-angular-query"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "peerDependencies": {
     "@angular/common": "^20.1.0",

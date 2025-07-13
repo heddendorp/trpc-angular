@@ -1,9 +1,24 @@
 {
-  "name": "trpc-link-angular",
+  "name": "@heddendorp/trpc-link-angular",
   "version": "0.0.1",
+  "description": "Angular HttpClient link for tRPC",
+  "main": "index.js",
+  "module": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "build": "ng build trpcLinkAngular",
     "test": "ng test trpcLinkAngular"
+  },
+  "keywords": ["trpc", "angular", "link", "httpclient"],
+  "author": "heddendorp",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/heddendorp/trpc-angular.git",
+    "directory": "projects/trpc-link-angular"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "peerDependencies": {
     "@angular/common": "^20.1.0",

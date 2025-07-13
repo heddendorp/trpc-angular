@@ -3,14 +3,16 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "build": "yarn workspaces foreach --all -pt run build",
+    "build": "ng build trpcLinkAngular && ng build tanstackAngularQuery",
     "build:trpc-link": "ng build trpcLinkAngular",
     "build:tanstack": "ng build tanstackAngularQuery",
     "format": "prettier . --write",
     "test": "ng test",
     "test:trpc-link": "ng test trpcLinkAngular",
     "test:tanstack": "ng test tanstackAngularQuery",
-    "semantic-release": "semantic-release"
+    "changeset": "changeset",
+    "changeset:version": "changeset version",
+    "changeset:publish": "./scripts/publish.sh"
   },
   "workspaces": [
     "projects/*"
@@ -40,16 +42,13 @@
     "@angular/build": "^20.1.0",
     "@angular/cli": "^20.1.0",
     "@angular/compiler-cli": "^20.1.0",
-    "@semantic-release/changelog": "^6.0.3",
-    "@semantic-release/exec": "^6.0.3",
-    "@semantic-release/git": "^10.0.1",
+    "@changesets/cli": "^2.27.9",
     "@tanstack/angular-query-experimental": "^5.83.0",
     "@trpc/client": "^11.4.3",
     "@trpc/server": "^11.4.3",
     "jsdom": "^26.1.0",
     "ng-packagr": "^20.1.0",
     "prettier": "3.6.2",
-    "semantic-release": "^24.2.0",
     "typescript": "~5.8.2",
     "vitest": "^3.2.4"
   },
