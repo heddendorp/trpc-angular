@@ -10,6 +10,8 @@ import type {
   Maybe,
   ProcedureType,
   TRPCResponse,
+  DataTransformerOptions,
+  TypeError,
 } from '@trpc/server/unstable-core-do-not-import';
 import type { HTTPHeaders } from '@trpc/client';
 
@@ -34,28 +36,63 @@ export interface ResolvedHTTPLinkOptions {
 }
 
 // Copy of TransformerOptions type from client package
+type TransformerOptionYes = {
+  /**
+   * Data transformer
+   *
+   * You must use the same transformer on the backend and frontend
+   * @see https://trpc.io/docs/v11/data-transformers
+   **/
+  transformer: DataTransformerOptions;
+};
+
+type TransformerOptionNo = {
+  /**
+   * Data transformer
+   *
+   * You must use the same transformer on the backend and frontend
+   * @see https://trpc.io/docs/v11/data-transformers
+   **/
+  transformer?: TypeError<'You must define a transformer on your your `initTRPC`-object first'>;
+};
+
 export type TransformerOptions<
   TRoot extends Pick<AnyClientTypes, 'transformer'>,
-> = {
-  transformer?: TRoot['transformer'];
-};
+> = TRoot['transformer'] extends true ? TransformerOptionYes : TransformerOptionNo;
 
 // Copy of getTransformer function from client package
 export function getTransformer(
-  transformer: AnyClientTypes['transformer'],
+  transformer: DataTransformerOptions | undefined,
 ): CombinedDataTransformer {
-  const serializer = transformer?.input ?? {
-    serialize: (v: any) => v,
-    deserialize: (v: any) => v,
-  };
-  const deserializer = transformer?.output ?? {
-    serialize: (v: any) => v,
-    deserialize: (v: any) => v,
-  };
+  if (!transformer) {
+    return {
+      input: {
+        serialize: (v: any) => v,
+        deserialize: (v: any) => v,
+      },
+      output: {
+        serialize: (v: any) => v,
+        deserialize: (v: any) => v,
+      },
+    };
+  }
 
+  // If it's a CombinedDataTransformer (has input and output properties)
+  if ('input' in transformer && 'output' in transformer) {
+    return transformer as CombinedDataTransformer;
+  }
+
+  // If it's a DataTransformer (has serialize and deserialize properties)
+  const singleTransformer = transformer as { serialize: (v: any) => any; deserialize: (v: any) => any };
   return {
-    input: serializer,
-    output: deserializer,
+    input: {
+      serialize: singleTransformer.serialize,
+      deserialize: singleTransformer.deserialize,
+    },
+    output: {
+      serialize: singleTransformer.serialize,
+      deserialize: singleTransformer.deserialize,
+    },
   };
 }
 
@@ -64,7 +101,7 @@ export function resolveHTTPLinkOptions(
 ): ResolvedHTTPLinkOptions {
   return {
     url: opts.url.toString(),
-    transformer: getTransformer(opts.transformer),
+    transformer: getTransformer(opts.transformer as DataTransformerOptions | undefined),
     methodOverride: opts.methodOverride,
   };
 }
