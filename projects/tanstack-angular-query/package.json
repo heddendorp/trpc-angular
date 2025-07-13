@@ -34,6 +34,11 @@
     "@trpc/client": "^11.4.3",
     "@trpc/server": "^11.4.3"
   },
+  "peerDependenciesMeta": {
+    "@heddendorp/trpc-link-angular": {
+      "optional": true
+    }
+  },
   "dependencies": {
     "tslib": "^2.3.0"
   },
