@@ -2,17 +2,13 @@
   "name": "trpc-angular",
   "version": "0.0.0",
   "scripts": {
-    "ng": "ng",
-    "build": "ng build trpcLinkAngular && ng build tanstackAngularQuery",
+    "build": "yarn workspaces foreach --all -tp run build",
     "build:trpc-link": "ng build trpcLinkAngular",
     "build:tanstack": "ng build tanstackAngularQuery",
     "format": "prettier . --write",
-    "test": "ng test",
-    "test:trpc-link": "ng test trpcLinkAngular",
-    "test:tanstack": "ng test tanstackAngularQuery",
-    "changeset": "changeset",
+    "test": "ng test --watch=false",
     "changeset:version": "changeset version",
-    "changeset:publish": "./scripts/publish.sh"
+    "changeset:publish": "yarn run build && changeset publish"
   },
   "workspaces": [
     "projects/*"

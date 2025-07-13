@@ -14,8 +14,7 @@
     "trpc",
     "angular",
     "tanstack",
-    "query",
-    "react-query"
+    "query"
   ],
   "author": "heddendorp",
   "license": "MIT",
