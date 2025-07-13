@@ -39,6 +39,21 @@ export const appRouter = t.router({
       return { success: true, deletedId: input.id };
     }),
 
+  // Admin routes
+  admin: t.router({
+    roles: t.router({
+      findMany: t.procedure
+        .input(z.object({}).optional())
+        .query(({ input }) => {
+          return [
+            { id: 1, name: 'Admin' },
+            { id: 2, name: 'User' },
+            { id: 3, name: 'Guest' }
+          ];
+        })
+    })
+  }),
+
   // For infinite query tests
   getUsers: t.procedure
     .input(z.object({ 

@@ -34,4 +34,7 @@ export type {
 } from './lib/subscriptionOptions';
 export { createTRPCOptionsProxy } from './lib/createOptionsProxy';
 export { injectTRPCSubscription } from './lib/subscriptionOptions';
+export { injectTRPCQuery } from './lib/inject-trpc-query';
+export { injectTRPCMutation } from './lib/inject-trpc-mutation';
+export { injectTRPCInfiniteQuery } from './lib/inject-trpc-infinite-query';
 export type * from './lib/types';
