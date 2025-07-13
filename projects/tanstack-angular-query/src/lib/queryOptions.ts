@@ -240,6 +240,18 @@ export function trpcQueryOptions(args: {
   // Create a function that returns the query options for injectQuery compatibility
   const queryOptionsFunction = () => queryOptionsResult;
 
-  // Copy all properties from queryOptions to the function so it can be used directly or called
-  return Object.assign(queryOptionsFunction, queryOptionsResult);
+  // Instead of using Object.assign, manually assign properties to ensure function nature is preserved
+  // This ensures the result is always a function while having all required properties
+  queryOptionsFunction.queryKey = queryOptionsResult.queryKey;
+  queryOptionsFunction.queryFn = queryOptionsResult.queryFn;
+  queryOptionsFunction.trpc = queryOptionsResult.trpc;
+  
+  // Copy any other properties that might be present
+  Object.keys(queryOptionsResult).forEach(key => {
+    if (key !== 'queryKey' && key !== 'queryFn' && key !== 'trpc') {
+      (queryOptionsFunction as any)[key] = (queryOptionsResult as any)[key];
+    }
+  });
+
+  return queryOptionsFunction;
 }
