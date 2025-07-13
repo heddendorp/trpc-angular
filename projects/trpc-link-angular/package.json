@@ -9,7 +9,12 @@
     "build": "ng build trpcLinkAngular",
     "test": "ng test trpcLinkAngular"
   },
-  "keywords": ["trpc", "angular", "link", "httpclient"],
+  "keywords": [
+    "trpc",
+    "angular",
+    "link",
+    "httpclient"
+  ],
   "author": "heddendorp",
   "license": "MIT",
   "repository": {

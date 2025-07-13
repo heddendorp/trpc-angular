@@ -10,7 +10,13 @@
     "test": "ng test tanstackAngularQuery",
     "lint": "ng lint tanstackAngularQuery"
   },
-  "keywords": ["trpc", "angular", "tanstack", "query", "react-query"],
+  "keywords": [
+    "trpc",
+    "angular",
+    "tanstack",
+    "query",
+    "react-query"
+  ],
   "author": "heddendorp",
   "license": "MIT",
   "repository": {

@@ -1146,6 +1146,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@heddendorp/tanstack-angular-query@workspace:projects/tanstack-angular-query":
+  version: 0.0.0-use.local
+  resolution: "@heddendorp/tanstack-angular-query@workspace:projects/tanstack-angular-query"
+  dependencies:
+    tslib: "npm:^2.3.0"
+  peerDependencies:
+    "@angular/common": ^20.1.0
+    "@angular/core": ^20.1.0
+    "@tanstack/angular-query-experimental": ^5.83.0
+    "@trpc/client": ^11.4.3
+    "@trpc/server": ^11.4.3
+  languageName: unknown
+  linkType: soft
+
+"@heddendorp/trpc-link-angular@workspace:projects/trpc-link-angular":
+  version: 0.0.0-use.local
+  resolution: "@heddendorp/trpc-link-angular@workspace:projects/trpc-link-angular"
+  dependencies:
+    tslib: "npm:^2.3.0"
+  peerDependencies:
+    "@angular/common": ^20.1.0
+    "@angular/core": ^20.1.0
+  languageName: unknown
+  linkType: soft
+
 "@inquirer/checkbox@npm:^4.1.9":
   version: 4.1.9
   resolution: "@inquirer/checkbox@npm:4.1.9"
@@ -6473,20 +6498,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tanstack-angular-query@workspace:projects/tanstack-angular-query":
-  version: 0.0.0-use.local
-  resolution: "tanstack-angular-query@workspace:projects/tanstack-angular-query"
-  dependencies:
-    tslib: "npm:^2.3.0"
-  peerDependencies:
-    "@angular/common": ^20.1.0
-    "@angular/core": ^20.1.0
-    "@tanstack/angular-query-experimental": ^5.83.0
-    "@trpc/client": ^11.4.3
-    "@trpc/server": ^11.4.3
-  languageName: unknown
-  linkType: soft
-
 "tar@npm:^6.1.11":
   version: 6.2.1
   resolution: "tar@npm:6.2.1"
@@ -6652,17 +6663,6 @@ __metadata:
     tslib: "npm:^2.3.0"
     typescript: "npm:~5.8.2"
     vitest: "npm:^3.2.4"
-  languageName: unknown
-  linkType: soft
-
-"trpc-link-angular@workspace:projects/trpc-link-angular":
-  version: 0.0.0-use.local
-  resolution: "trpc-link-angular@workspace:projects/trpc-link-angular"
-  dependencies:
-    tslib: "npm:^2.3.0"
-  peerDependencies:
-    "@angular/common": ^20.1.0
-    "@angular/core": ^20.1.0
   languageName: unknown
   linkType: soft
 
