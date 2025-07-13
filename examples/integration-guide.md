@@ -91,7 +91,7 @@ import type { AppRouter } from '../server/router';
 })
 export class UserProfileComponent {
   userQuery = injectTRPCQuery<AppRouter>((trpc) => 
-    trpc.user.get.query({ id: 1 })
+    trpc.user.get.queryOptions({ id: 1 })
   );
 }
 ```
@@ -141,7 +141,7 @@ export class UserFormComponent {
   });
   
   updateUserMutation = injectTRPCMutation<AppRouter>((trpc) => 
-    trpc.user.update.mutate
+    trpc.user.update.mutationOptions()
   );
   
   onSubmit() {
@@ -193,7 +193,7 @@ import type { AppRouter } from '../server/router';
 })
 export class PostsListComponent {
   postsQuery = injectTRPCInfiniteQuery<AppRouter>((trpc) => 
-    trpc.posts.list.infiniteQuery(
+    trpc.posts.list.infiniteQueryOptions(
       { limit: 10 },
       {
         getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -282,7 +282,7 @@ import { injectTRPCQuery } from '@heddendorp/tanstack-angular-query';
 })
 export class OptimizedQueryComponent {
   dataQuery = injectTRPCQuery<AppRouter>((trpc) => 
-    trpc.data.get.query(
+    trpc.data.get.queryOptions(
       { id: 1 },
       {
         staleTime: 5 * 60 * 1000, // 5 minutes
