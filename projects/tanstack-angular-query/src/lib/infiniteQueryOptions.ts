@@ -230,11 +230,11 @@ export function trpcInfiniteQueryOptions(args: {
   const inputIsSkipToken = input === skipToken;
 
   const queryFn: QueryFunction<unknown, TRPCQueryKey> = async ({
-                                                                 queryKey,
-                                                                 signal,
-                                                                 pageParam,
-                                                                 direction,
-                                                               }) => {
+    queryKey,
+    signal,
+    pageParam,
+    direction,
+  }) => {
     const actualOpts = {
       ...opts,
       trpc: {
@@ -245,7 +245,7 @@ export function trpcInfiniteQueryOptions(args: {
 
     const actualArgs = getClientArgs(queryKey, actualOpts, {
       pageParam,
-      direction,
+      direction: direction as 'forward' | 'backward',
     });
 
     return await query(...actualArgs);
@@ -261,5 +261,5 @@ export function trpcInfiniteQueryOptions(args: {
       initialPageParam: initialCursor ?? null,
     }),
     { trpc: createTRPCOptionsResult({ path }) },
-  );
+  ) as AnyTRPCInfiniteQueryOptionsOut;
 }
