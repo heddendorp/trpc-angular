@@ -1,7 +1,7 @@
 {
   "name": "@heddendorp/tanstack-angular-query",
   "version": "0.1.2-alpha.0",
-  "description": "TanStack Angular Query Integration for tRPC (Placeholder)",
+  "description": "TanStack Angular Query Integration for tRPC",
   "author": "heddendorp",
   "license": "MIT",
   "homepage": "https://github.com/heddendorp/trpc-angular",

@@ -1,40 +1,32 @@
-import { Injectable } from '@angular/core';
-
-@Injectable({
-  providedIn: 'root',
-})
-export class TanstackAngularQueryService {
-  constructor() {
-    throw new Error(
-      'TanStack Angular Query integration is not yet implemented. ' +
-      'This is a placeholder service. The original implementation has ' +
-      'API compatibility issues with tRPC 11.4.3 and TanStack Query 5.80.3+ ' +
-      'that need to be resolved before this service can be fully functional.'
-    );
-  }
-}
-
-// Placeholder exports for the expected API
-export function provideTRPC() {
-  throw new Error('provideTRPC is not implemented yet');
-}
-
-export function injectTRPC() {
-  throw new Error('injectTRPC is not implemented yet');
-}
-
-export function injectTRPCClient() {
-  throw new Error('injectTRPCClient is not implemented yet');
-}
-
-export function createTRPCInjectors() {
-  throw new Error('createTRPCInjectors is not implemented yet');
-}
-
-export function createTRPCOptionsProxy() {
-  throw new Error('createTRPCOptionsProxy is not implemented yet');
-}
-
-export function injectTRPCSubscription() {
-  throw new Error('injectTRPCSubscription is not implemented yet');
-}
+export {
+  provideTRPC,
+  injectTRPC,
+  injectTRPCClient,
+  createTRPCInjectors,
+  TRPCService,
+} from './internals/context';
+export type {
+  TRPCOptionsProxy,
+  inferInput,
+  inferOutput,
+  DecorateMutationProcedure,
+  DecorateProcedure,
+  DecorateRouterKeyable,
+  DecorateQueryProcedure,
+  DecorateSubscriptionProcedure,
+} from './internals/createOptionsProxy';
+export type { TRPCQueryOptions } from './internals/queryOptions';
+export type { TRPCInfiniteQueryOptions } from './internals/infiniteQueryOptions';
+export type { TRPCMutationOptions } from './internals/mutationOptions';
+export type {
+  TRPCSubscriptionOptions,
+  TRPCSubscriptionStatus,
+  TRPCSubscriptionConnectingResult,
+  TRPCSubscriptionErrorResult,
+  TRPCSubscriptionIdleResult,
+  TRPCSubscriptionPendingResult,
+  TRPCSubscriptionResult,
+} from './internals/subscriptionOptions';
+export { createTRPCOptionsProxy } from './internals/createOptionsProxy';
+export { injectTRPCSubscription } from './internals/subscriptionOptions';
+export type * from './internals/types';

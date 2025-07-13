@@ -1972,6 +1972,7 @@ __metadata:
     "@angular/core": "npm:^20.1.0"
     "@angular/platform-browser": "npm:^20.1.0"
     "@angular/platform-browser-dynamic": "npm:^20.1.0"
+    "@tanstack/angular-query-experimental": "npm:^5.80.3"
     "@trpc/client": "npm:^11.4.3"
     "@trpc/server": "npm:^11.4.3"
     "@types/jasmine": "npm:~5.1.0"
@@ -1988,6 +1989,7 @@ __metadata:
     rxjs: "npm:^7.8.0"
     tslib: "npm:^2.3.0"
     typescript: "npm:^5.8.2"
+    zod: "npm:^3.25.51"
     zone.js: "npm:^0.15.0"
   languageName: unknown
   linkType: soft
@@ -4060,6 +4062,33 @@ __metadata:
   version: 3.1.2
   resolution: "@socket.io/component-emitter@npm:3.1.2"
   checksum: 10c0/c4242bad66f67e6f7b712733d25b43cbb9e19a595c8701c3ad99cbeb5901555f78b095e24852f862fffb43e96f1d8552e62def885ca82ae1bb05da3668fd87d7
+  languageName: node
+  linkType: hard
+
+"@tanstack/angular-query-experimental@npm:^5.80.3":
+  version: 5.83.0
+  resolution: "@tanstack/angular-query-experimental@npm:5.83.0"
+  dependencies:
+    "@tanstack/query-core": "npm:5.83.0"
+    "@tanstack/query-devtools": "npm:5.81.2"
+  peerDependencies:
+    "@angular/common": ">=16.0.0"
+    "@angular/core": ">=16.0.0"
+  checksum: 10c0/9f5a22bed5d191478fea5f384b4e425174cef075688e66aacf279425d085d4479b73cf9c357318f5804e0f2b86dd5f02fcfc09c6c9c0c077fe7e360b128c9f05
+  languageName: node
+  linkType: hard
+
+"@tanstack/query-core@npm:5.83.0":
+  version: 5.83.0
+  resolution: "@tanstack/query-core@npm:5.83.0"
+  checksum: 10c0/e6dc480bc99eaca552a9ad65423788b60368cf99308681252fc7dbe42a3f2c1c978db0d3471cc3349b9112cfb4d967ace4e192a1d7e987e30c5c1ff74809c77c
+  languageName: node
+  linkType: hard
+
+"@tanstack/query-devtools@npm:5.81.2":
+  version: 5.81.2
+  resolution: "@tanstack/query-devtools@npm:5.81.2"
+  checksum: 10c0/f942cba7bd3ecb471063cd472eeebb2ec76005feeb7e0f357b191da5ab9f769aa767bc88d4da82b2b39c4fcbb16dfed38ce3c77b6eea4d4c30405368c1120207
   languageName: node
   linkType: hard
 
@@ -13889,7 +13918,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:^3.23.8":
+"zod@npm:^3.23.8, zod@npm:^3.25.51":
   version: 3.25.76
   resolution: "zod@npm:3.25.76"
   checksum: 10c0/5718ec35e3c40b600316c5b4c5e4976f7fee68151bc8f8d90ec18a469be9571f072e1bbaace10f1e85cf8892ea12d90821b200e980ab46916a6166a4260a983c
