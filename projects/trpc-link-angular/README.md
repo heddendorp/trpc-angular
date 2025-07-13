@@ -47,6 +47,64 @@ export class TrpcService {
 }
 ```
 
+### With Data Transformers (e.g., SuperJSON)
+
+```typescript
+import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { createTRPCClient } from '@trpc/client';
+import { angularHttpLink } from '@heddendorp/trpc-link-angular';
+import superjson from 'superjson';
+import type { AppRouter } from '../server/router';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class TrpcWithTransformerService {
+  private httpClient = inject(HttpClient);
+  
+  client = createTRPCClient<AppRouter>({
+    links: [
+      angularHttpLink({
+        url: 'http://localhost:3000/trpc',
+        httpClient: this.httpClient,
+        transformer: superjson, // SuperJSON transformer for Date objects, etc.
+      }),
+    ],
+  });
+}
+```
+
+### With Custom Transformer
+
+```typescript
+import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { createTRPCClient } from '@trpc/client';
+import { angularHttpLink } from '@heddendorp/trpc-link-angular';
+import type { AppRouter } from '../server/router';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class TrpcWithCustomTransformerService {
+  private httpClient = inject(HttpClient);
+  
+  client = createTRPCClient<AppRouter>({
+    links: [
+      angularHttpLink({
+        url: 'http://localhost:3000/trpc',
+        httpClient: this.httpClient,
+        transformer: {
+          serialize: (data) => JSON.stringify(data),
+          deserialize: (data) => JSON.parse(data),
+        },
+      }),
+    ],
+  });
+}
+```
+
 ### With Authentication
 
 ```typescript
@@ -117,6 +175,7 @@ Creates a tRPC link that uses Angular's HttpClient for HTTP requests.
 - `url: string` - The tRPC server URL
 - `httpClient: HttpClient` - Angular HttpClient instance
 - `headers?: () => Record<string, string>` - Function that returns headers
+- `transformer?: DataTransformerOptions` - Data transformer (e.g., SuperJSON)
 - `onError?: (error: HttpErrorResponse) => void` - Error handler function
 
 ## Features
@@ -124,6 +183,7 @@ Creates a tRPC link that uses Angular's HttpClient for HTTP requests.
 - **Angular HttpClient Integration**: Uses Angular's HttpClient for all HTTP requests
 - **HTTP Interceptors Support**: Automatically works with Angular HTTP interceptors
 - **Error Handling**: Proper error handling with HttpErrorResponse
+- **Data Transformers**: Full support for SuperJSON and custom transformers
 - **TypeScript Support**: Full TypeScript support with type inference
 - **Observable Integration**: Seamless integration with Angular's Observable patterns
 
