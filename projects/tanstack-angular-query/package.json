@@ -1,6 +1,11 @@
 {
   "name": "tanstack-angular-query",
   "version": "0.0.1",
+  "scripts": {
+    "build": "ng build tanstackAngularQuery",
+    "test": "ng test tanstackAngularQuery",
+    "lint": "ng lint tanstackAngularQuery"
+  },
   "peerDependencies": {
     "@angular/common": "^20.1.0",
     "@angular/core": "^20.1.0"

@@ -2141,6 +2141,33 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/angular-query-experimental@npm:^5.83.0":
+  version: 5.83.0
+  resolution: "@tanstack/angular-query-experimental@npm:5.83.0"
+  dependencies:
+    "@tanstack/query-core": "npm:5.83.0"
+    "@tanstack/query-devtools": "npm:5.81.2"
+  peerDependencies:
+    "@angular/common": ">=16.0.0"
+    "@angular/core": ">=16.0.0"
+  checksum: 10c0/9f5a22bed5d191478fea5f384b4e425174cef075688e66aacf279425d085d4479b73cf9c357318f5804e0f2b86dd5f02fcfc09c6c9c0c077fe7e360b128c9f05
+  languageName: node
+  linkType: hard
+
+"@tanstack/query-core@npm:5.83.0":
+  version: 5.83.0
+  resolution: "@tanstack/query-core@npm:5.83.0"
+  checksum: 10c0/e6dc480bc99eaca552a9ad65423788b60368cf99308681252fc7dbe42a3f2c1c978db0d3471cc3349b9112cfb4d967ace4e192a1d7e987e30c5c1ff74809c77c
+  languageName: node
+  linkType: hard
+
+"@tanstack/query-devtools@npm:5.81.2":
+  version: 5.81.2
+  resolution: "@tanstack/query-devtools@npm:5.81.2"
+  checksum: 10c0/f942cba7bd3ecb471063cd472eeebb2ec76005feeb7e0f357b191da5ab9f769aa767bc88d4da82b2b39c4fcbb16dfed38ce3c77b6eea4d4c30405368c1120207
+  languageName: node
+  linkType: hard
+
 "@trpc/client@npm:^11.4.3":
   version: 11.4.3
   resolution: "@trpc/client@npm:11.4.3"
@@ -5905,6 +5932,7 @@ __metadata:
     "@angular/forms": "npm:^20.1.0"
     "@angular/platform-browser": "npm:^20.1.0"
     "@angular/router": "npm:^20.1.0"
+    "@tanstack/angular-query-experimental": "npm:^5.83.0"
     "@trpc/client": "npm:^11.4.3"
     "@trpc/server": "npm:^11.4.3"
     jsdom: "npm:^26.1.0"
