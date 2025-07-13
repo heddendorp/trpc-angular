@@ -1154,9 +1154,13 @@ __metadata:
   peerDependencies:
     "@angular/common": ^20.1.0
     "@angular/core": ^20.1.0
+    "@heddendorp/trpc-link-angular": "workspace:^"
     "@tanstack/angular-query-experimental": ^5.83.0
     "@trpc/client": ^11.4.3
     "@trpc/server": ^11.4.3
+  peerDependenciesMeta:
+    "@heddendorp/trpc-link-angular":
+      optional: true
   languageName: unknown
   linkType: soft
 
