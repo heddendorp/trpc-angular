@@ -241,5 +241,12 @@ export function trpcQueryOptions(args: {
   const queryOptionsFunction = () => queryOptionsResult;
 
   // Copy all properties from queryOptions to the function so it can be used directly or called
-  return Object.assign(queryOptionsFunction, queryOptionsResult);
+  // Use a more explicit approach to avoid potential issues with Object.assign
+  const result = queryOptionsFunction as typeof queryOptionsFunction & typeof queryOptionsResult;
+  
+  // Define properties explicitly for better TypeScript support
+  const descriptors = Object.getOwnPropertyDescriptors(queryOptionsResult);
+  Object.defineProperties(result, descriptors);
+
+  return result;
 }

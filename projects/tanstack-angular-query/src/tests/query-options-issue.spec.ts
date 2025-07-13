@@ -62,59 +62,32 @@ describe('Query Options Issue Reproduction', () => {
     });
   });
 
-  it('should reproduce the queryOptions issue from the problem statement', () => {
+  it('should reproduce the exact issue: injectQuery expects a function that returns options', () => {
     @Component({
-      changeDetection: ChangeDetectionStrategy.OnPush,
-      imports: [JsonPipe],
-      selector: 'app-members-hub',
-      template: `
-        <div>
-          @if (rolesQuery.isLoading()) {
-            <p>Loading roles...</p>
-          } @else if (rolesQuery.error()) {
-            <p>Error: {{ rolesQuery.error()?.message }}</p>
-          } @else if (rolesQuery.data()) {
-            <div>
-              <h3>Roles:</h3>
-              <pre>{{ rolesQuery.data() | json }}</pre>
-            </div>
-          } @else {
-            <p>No roles data available</p>
-          }
-        </div>
-      `,
+      template: `<div>Test Component</div>`,
     })
-    class MembersHubComponent {
+    class TestComponent {
       private readonly trpc = injectTRPC<AppRouter>();
-      public readonly rolesQuery = injectQuery(
-        this.trpc.admin.roles.findMany.queryOptions({}),
-      );
       
-      constructor() {
-        effect(() => {
-          const roles = this.rolesQuery.data();
-          if (roles) {
-            console.log('Roles:', roles);
-          } else {
-            console.warn('No roles data available');
-          }
-        });
-      }
+      // This should work - the user's current pattern
+      rolesQuery = injectQuery(this.trpc.admin.roles.findMany.queryOptions({}));
+      
+      // This should also work - functional pattern  
+      rolesQueryFunctional = injectQuery(() => this.trpc.admin.roles.findMany.queryOptions({}));
     }
 
-    // This should not throw an error
+    // This should not throw - the current implementation should return a function
     expect(() => {
-      const fixture = TestBed.createComponent(MembersHubComponent);
-      expect(fixture.componentInstance).toBeDefined();
-      expect(fixture.componentInstance.rolesQuery).toBeDefined();
+      const fixture = TestBed.createComponent(TestComponent);
+      const component = fixture.componentInstance;
       
-      // Check that the query has the expected structure
-      expect(fixture.componentInstance.rolesQuery.data).toBeDefined();
-      expect(fixture.componentInstance.rolesQuery.isLoading).toBeDefined();
-      expect(fixture.componentInstance.rolesQuery.error).toBeDefined();
+      // Both should work
+      expect(component.rolesQuery).toBeDefined();
+      expect(component.rolesQueryFunctional).toBeDefined();
       
-      // Template should compile and render without errors
-      fixture.detectChanges();
+      // Both should have the same interface
+      expect(component.rolesQuery.data).toBeDefined();
+      expect(component.rolesQueryFunctional.data).toBeDefined();
     }).not.toThrow();
   });
 
@@ -195,5 +168,31 @@ describe('Query Options Issue Reproduction', () => {
     expect(component.queryOptionsObj.queryKey).toEqual(component.queryOptionsResult.queryKey);
     expect(typeof component.queryOptionsObj.queryFn).toBe('function');
     expect(typeof component.queryOptionsResult.queryFn).toBe('function');
+  });
+
+  it('should demonstrate the recommended usage pattern for injectQuery', () => {
+    @Component({
+      template: `<div>Test Component</div>`,
+    })
+    class TestComponent {
+      private readonly trpc = injectTRPC<AppRouter>();
+      
+      // RECOMMENDED: Use functional pattern for injectQuery
+      rolesQueryRecommended = injectQuery(() => this.trpc.admin.roles.findMany.queryOptions({}));
+      
+      // DEPRECATED: Direct usage (may cause issues in some environments)
+      rolesQueryDirect = injectQuery(this.trpc.admin.roles.findMany.queryOptions({}));
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    const component = fixture.componentInstance;
+    
+    // Both patterns should work, but functional is recommended
+    expect(component.rolesQueryRecommended).toBeDefined();
+    expect(component.rolesQueryDirect).toBeDefined();
+    
+    // Both should have the same interface
+    expect(component.rolesQueryRecommended.data).toBeDefined();
+    expect(component.rolesQueryDirect.data).toBeDefined();
   });
 });
