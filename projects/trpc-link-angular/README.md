@@ -1,64 +1,179 @@
-# TrpcLinkAngular
+# @heddendorp/trpc-link-angular
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.0.
+Angular HttpClient link for tRPC client that provides seamless integration with Angular's HTTP services.
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Installation
 
 ```bash
-ng generate component component-name
+npm install @heddendorp/trpc-link-angular
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Peer Dependencies
+
+This package requires the following peer dependencies:
+
+- `@angular/common >=16.0.0`
+- `@angular/core >=16.0.0`
+- `@trpc/client 11.4.3`
+- `@trpc/server 11.4.3`
+- `rxjs >=7.0.0`
+- `typescript >=5.7.2`
+
+## Usage
+
+### Basic Usage
+
+```typescript
+import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { createTRPCClient } from '@trpc/client';
+import { angularHttpLink } from '@heddendorp/trpc-link-angular';
+import type { AppRouter } from '../server/router';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class TrpcService {
+  private httpClient = inject(HttpClient);
+  
+  client = createTRPCClient<AppRouter>({
+    links: [
+      angularHttpLink({
+        url: 'http://localhost:3000/trpc',
+        httpClient: this.httpClient,
+      }),
+    ],
+  });
+}
+```
+
+### With Authentication
+
+```typescript
+import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { createTRPCClient } from '@trpc/client';
+import { angularHttpLink } from '@heddendorp/trpc-link-angular';
+import type { AppRouter } from '../server/router';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class TrpcWithAuthService {
+  private httpClient = inject(HttpClient);
+  
+  client = createTRPCClient<AppRouter>({
+    links: [
+      angularHttpLink({
+        url: 'http://localhost:3000/trpc',
+        httpClient: this.httpClient,
+        headers: () => ({
+          authorization: `Bearer ${localStorage.getItem('token')}`,
+        }),
+      }),
+    ],
+  });
+}
+```
+
+### Error Handling
+
+```typescript
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { createTRPCClient } from '@trpc/client';
+import { angularHttpLink } from '@heddendorp/trpc-link-angular';
+import type { AppRouter } from '../server/router';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class TrpcWithErrorHandlingService {
+  private httpClient = inject(HttpClient);
+  
+  client = createTRPCClient<AppRouter>({
+    links: [
+      angularHttpLink({
+        url: 'http://localhost:3000/trpc',
+        httpClient: this.httpClient,
+        onError: (error: HttpErrorResponse) => {
+          console.error('tRPC Error:', error);
+          // Handle error globally
+        },
+      }),
+    ],
+  });
+}
+```
+
+## API Reference
+
+### angularHttpLink(options)
+
+Creates a tRPC link that uses Angular's HttpClient for HTTP requests.
+
+#### Options
+
+- `url: string` - The tRPC server URL
+- `httpClient: HttpClient` - Angular HttpClient instance
+- `headers?: () => Record<string, string>` - Function that returns headers
+- `onError?: (error: HttpErrorResponse) => void` - Error handler function
+
+## Features
+
+- **Angular HttpClient Integration**: Uses Angular's HttpClient for all HTTP requests
+- **HTTP Interceptors Support**: Automatically works with Angular HTTP interceptors
+- **Error Handling**: Proper error handling with HttpErrorResponse
+- **TypeScript Support**: Full TypeScript support with type inference
+- **Observable Integration**: Seamless integration with Angular's Observable patterns
+
+## Migration from httpLink
+
+If you're migrating from the standard tRPC httpLink:
+
+```typescript
+// Before
+import { httpLink } from '@trpc/client';
+
+const client = createTRPCClient<AppRouter>({
+  links: [
+    httpLink({
+      url: 'http://localhost:3000/trpc',
+    }),
+  ],
+});
+
+// After
+import { angularHttpLink } from '@heddendorp/trpc-link-angular';
+
+const client = createTRPCClient<AppRouter>({
+  links: [
+    angularHttpLink({
+      url: 'http://localhost:3000/trpc',
+      httpClient: this.httpClient,
+    }),
+  ],
+});
+```
+
+## Development
+
+### Building
+
+To build the library:
 
 ```bash
-ng generate --help
+ng build trpc-link-angular
 ```
 
-## Building
+### Testing
 
-To build the library, run:
+To run tests:
 
 ```bash
-ng build trpcLinkAngular
+ng test trpc-link-angular
 ```
 
-This command will compile your project, and the build artifacts will be placed in the `dist/` directory.
+## Contributing
 
-### Publishing the Library
-
-Once the project is built, you can publish your library by following these steps:
-
-1. Navigate to the `dist` directory:
-
-   ```bash
-   cd dist/trpc-link-angular
-   ```
-
-2. Run the `npm publish` command to publish your library to the npm registry:
-   ```bash
-   npm publish
-   ```
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Please see the [Maintenance Guide](../../MAINTENANCE_GUIDE.md) for information on contributing to this project.
