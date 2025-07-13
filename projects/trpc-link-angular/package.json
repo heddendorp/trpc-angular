@@ -23,7 +23,8 @@
     "directory": "projects/trpc-link-angular"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "directory": "../../dist/trpc-link-angular"
   },
   "peerDependencies": {
     "@angular/common": "^20.1.0",

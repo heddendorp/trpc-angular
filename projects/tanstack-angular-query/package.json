@@ -24,7 +24,8 @@
     "directory": "projects/tanstack-angular-query"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "directory": "../../dist/tanstack-angular-query"
   },
   "peerDependencies": {
     "@angular/common": "^20.1.0",
