@@ -2,8 +2,8 @@ name: Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
 
 jobs:
   release:
@@ -11,11 +11,13 @@ jobs:
     
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
     
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
+        node-version: '24'
         registry-url: 'https://registry.npmjs.org'
     
     - name: Enable Corepack
@@ -27,27 +29,34 @@ jobs:
     - name: Build packages
       run: yarn build
     
-    - name: Publish trpc-link-angular
+    - name: Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      run: yarn semantic-release
+    
+    - name: Get release version
+      id: version
+      run: |
+        if [ -f dist/trpc-link-angular/package.json ]; then
+          VERSION=$(node -p "require('./dist/trpc-link-angular/package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "has_release=true" >> $GITHUB_OUTPUT
+        else
+          echo "has_release=false" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Publish trpc-link-angular to npm
+      if: steps.version.outputs.has_release == 'true'
       working-directory: dist/trpc-link-angular
       run: npm publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
     
-    - name: Publish tanstack-angular-query
+    - name: Publish tanstack-angular-query to npm
+      if: steps.version.outputs.has_release == 'true'
       working-directory: dist/tanstack-angular-query
       run: npm publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       continue-on-error: true # Continue if tanstack-angular-query fails to build
-    
-    - name: Create GitHub Release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        body: |
-          See [CHANGELOG.md](CHANGELOG.md) for details.
-        draft: false
-        prerelease: false

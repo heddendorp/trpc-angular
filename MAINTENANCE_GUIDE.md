@@ -39,7 +39,7 @@ This repository uses Angular workspace with multiple projects:
 
 ### Prerequisites
 
-- Node.js 18+ or 20+
+- Node.js 24+ (Node 24 is the default version)
 - Yarn 4.9.2 (managed by Corepack)
 - Angular CLI 20+
 
@@ -206,13 +206,54 @@ To add proper tests:
 
 ## Publishing
 
-### Pre-publishing Checklist
+### Automated Publishing with Semantic Release
 
-- [ ] All packages build successfully
-- [ ] Tests pass (when implemented)
-- [ ] Documentation is updated
-- [ ] Version numbers are bumped appropriately
-- [ ] CHANGELOG is updated
+This project uses [semantic-release](https://github.com/semantic-release/semantic-release) for automated version management and publishing.
+
+#### How it works:
+
+1. **Commit messages** follow the [Conventional Commits](https://www.conventionalcommits.org/) format
+2. **Semantic-release** analyzes commit messages to determine version bumps
+3. **GitHub Actions** automatically publishes packages on push to main branch
+4. **Changelog** and **GitHub releases** are automatically generated
+
+#### Commit Message Format:
+
+```
+type(scope): description
+
+[optional body]
+
+[optional footer]
+```
+
+**Types:**
+- `feat`: New feature (minor version bump)
+- `fix`: Bug fix (patch version bump)
+- `docs`: Documentation only changes
+- `style`: Code style changes (formatting, etc.)
+- `refactor`: Code refactoring
+- `test`: Adding or updating tests
+- `chore`: Maintenance tasks
+
+**Breaking Changes:**
+- Add `BREAKING CHANGE:` in the commit footer
+- Or use `feat!:` or `fix!:` for major version bump
+
+#### Examples:
+
+```bash
+# Patch version bump
+git commit -m "fix: resolve HTTP interceptor issue"
+
+# Minor version bump
+git commit -m "feat: add new query hook for mutations"
+
+# Major version bump
+git commit -m "feat!: change API signature
+
+BREAKING CHANGE: The angularHttpLink function now requires HttpClient as a parameter"
+```
 
 ### Manual Publishing
 
@@ -226,36 +267,25 @@ cd ../tanstack-angular-query
 npm publish
 ```
 
-### Automated Publishing
+### Release Process
 
-Consider setting up automated publishing with GitHub Actions:
+1. **Create feature branch** and make changes
+2. **Follow conventional commits** for all commit messages
+3. **Create PR** and merge to main
+4. **Semantic-release** runs automatically and:
+   - Analyzes commits since last release
+   - Generates changelog
+   - Bumps version numbers
+   - Creates GitHub release
+   - Publishes to npm (if version changed)
 
-```yaml
-# .github/workflows/publish.yml
-name: Publish Packages
+### Pre-publishing Checklist
 
-on:
-  push:
-    tags:
-      - 'v*'
-
-jobs:
-  publish:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-          registry-url: 'https://registry.npmjs.org'
-      - run: corepack enable
-      - run: yarn install
-      - run: yarn build
-      - run: cd dist/trpc-link-angular && npm publish
-      - run: cd dist/tanstack-angular-query && npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-```
+- [ ] All packages build successfully
+- [ ] Tests pass (when implemented)
+- [ ] Documentation is updated
+- [ ] Commit messages follow conventional format
+- [ ] Breaking changes are documented
 
 ## Troubleshooting
 
