@@ -1,6 +1,6 @@
 {
   "name": "@heddendorp/trpc-link-angular",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Angular HttpClient link for tRPC",
   "main": "index.js",
   "module": "index.js",
