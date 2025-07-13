@@ -4,7 +4,13 @@
   "scripts": {
     "ng": "ng",
     "build": "yarn workspaces foreach --all -pt run build",
-    "format": "prettier . --write"
+    "build:trpc-link": "ng build trpcLinkAngular",
+    "build:tanstack": "ng build tanstackAngularQuery",
+    "format": "prettier . --write",
+    "test": "ng test",
+    "test:trpc-link": "ng test trpcLinkAngular",
+    "test:tanstack": "ng test tanstackAngularQuery",
+    "release": "./scripts/release.sh"
   },
   "workspaces": [
     "projects/*"
