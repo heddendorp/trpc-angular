@@ -245,7 +245,7 @@ export function trpcInfiniteQueryOptions(args: {
 
     const actualArgs = getClientArgs(queryKey, actualOpts, {
       pageParam,
-      direction,
+      direction: direction as "forward" | "backward",
     });
 
     return await query(...actualArgs);
@@ -261,5 +261,5 @@ export function trpcInfiniteQueryOptions(args: {
       initialPageParam: initialCursor ?? null,
     }),
     { trpc: createTRPCOptionsResult({ path }) },
-  );
+  ) as AnyTRPCInfiniteQueryOptionsOut;
 }

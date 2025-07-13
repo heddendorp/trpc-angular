@@ -317,7 +317,12 @@ export function createTRPCOptionsProxy<TRouter extends AnyTRPCRouter>(
 
   const client = (() => {
     if ('client' in opts) {
-      return getUntypedClient(opts.client);
+      // If it's already an untyped client, return it directly
+      if ('query' in opts.client && 'mutation' in opts.client && 'subscription' in opts.client) {
+        return opts.client as TRPCUntypedClient<TRouter>;
+      }
+      // Otherwise, get the untyped client from the typed client
+      return getUntypedClient(opts.client as any) as TRPCUntypedClient<TRouter>;
     }
 
     return {
@@ -326,9 +331,10 @@ export function createTRPCOptionsProxy<TRouter extends AnyTRPCRouter>(
           path,
           input,
           router: opts.router,
-          ctx: typeof opts.ctx === 'function' ? opts.ctx() : opts.ctx,
+          ctx: typeof opts.ctx === 'function' ? (opts.ctx as Function)() : opts.ctx,
           type: 'query',
           signal: options?.signal,
+          getRawInput: () => Promise.resolve(input),
         });
       },
       mutation: (
@@ -340,9 +346,10 @@ export function createTRPCOptionsProxy<TRouter extends AnyTRPCRouter>(
           path,
           input,
           router: opts.router,
-          ctx: typeof opts.ctx === 'function' ? opts.ctx() : opts.ctx,
+          ctx: typeof opts.ctx === 'function' ? (opts.ctx as Function)() : opts.ctx,
           type: 'mutation',
           signal: options?.signal,
+          getRawInput: () => Promise.resolve(input),
         });
       },
       subscription: (
@@ -354,15 +361,16 @@ export function createTRPCOptionsProxy<TRouter extends AnyTRPCRouter>(
           path,
           input,
           router: opts.router,
-          ctx: typeof opts.ctx === 'function' ? opts.ctx() : opts.ctx,
+          ctx: typeof opts.ctx === 'function' ? (opts.ctx as Function)() : opts.ctx,
           type: 'subscription',
           signal: options?.signal,
+          getRawInput: () => Promise.resolve(input),
         });
       },
-    } as TRPCUntypedClient<TRouter>;
+    } as unknown as TRPCUntypedClient<TRouter>;
   })();
 
-  return createTRPCRecursiveProxy(({ path, args }) => {
+  const proxyHandler = ({ path, args }: { path: readonly string[]; args: readonly unknown[] }): any => {
     const pathCopy = [...path];
     const lastPart = pathCopy.pop();
 
@@ -384,7 +392,7 @@ export function createTRPCOptionsProxy<TRouter extends AnyTRPCRouter>(
         queryClient,
         path: pathCopy,
         queryKey,
-        opts,
+        opts: opts as any,
       });
     }
 
@@ -396,7 +404,7 @@ export function createTRPCOptionsProxy<TRouter extends AnyTRPCRouter>(
         queryClient,
         path: pathCopy,
         queryKey: getQueryKeyInternal(pathCopy, input, 'infinite'),
-        opts,
+        opts: opts as any,
       });
     }
 
@@ -407,7 +415,7 @@ export function createTRPCOptionsProxy<TRouter extends AnyTRPCRouter>(
         queryClient,
         path: pathCopy,
         mutationKey,
-        opts,
+        opts: opts as any,
       });
     }
 
@@ -418,7 +426,7 @@ export function createTRPCOptionsProxy<TRouter extends AnyTRPCRouter>(
         subscribe: subscribeFn,
         path: pathCopy,
         queryKey,
-        opts,
+        opts: opts as any,
       });
     }
 
@@ -436,14 +444,14 @@ export function createTRPCOptionsProxy<TRouter extends AnyTRPCRouter>(
 
     if (lastPart === 'queryFilter') {
       return {
-        ...opts,
+        ...(opts as any),
         queryKey: getQueryKeyInternal(pathCopy, input, 'query'),
       };
     }
 
     if (lastPart === 'infiniteQueryFilter') {
       return {
-        ...opts,
+        ...(opts as any),
         queryKey: getQueryKeyInternal(pathCopy, input, 'infinite'),
       };
     }
@@ -454,17 +462,17 @@ export function createTRPCOptionsProxy<TRouter extends AnyTRPCRouter>(
 
     if (lastPart === 'pathFilter') {
       return {
-        ...input,
+        ...(input as any),
         queryKey: getQueryKeyInternal(pathCopy, undefined, 'any'),
       };
     }
 
     // If we reach here, continue building the path
     return createTRPCRecursiveProxy(({ path: nextPath, args: nextArgs }) => {
-      return createTRPCOptionsProxy(opts)({
-        path: [...path, ...nextPath],
-        args: nextArgs,
-      });
+      // Call the handler recursively with the combined path
+      return proxyHandler({ path: [...path, ...nextPath], args: nextArgs });
     });
-  });
+  };
+
+  return createTRPCRecursiveProxy(proxyHandler);
 }
