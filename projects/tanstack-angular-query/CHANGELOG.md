@@ -1,5 +1,11 @@
 # @heddendorp/tanstack-angular-query
 
+## 0.1.0
+
+### Minor Changes
+
+- 02ed4f1: Revert suboptimal change
+
 ## 0.0.5
 
 ### Patch Changes
