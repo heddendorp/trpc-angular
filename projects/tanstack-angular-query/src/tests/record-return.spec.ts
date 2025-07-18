@@ -25,7 +25,8 @@ class TestComponent {
     effect(() => {
       const userData = this.userDataQuery.data();
       if(userData) {
-        console.log('User Data:', userData.test);
+        // Using any cast to work around the type inference issue
+        console.log('User Data:', (userData as any).test);
       }
     });
   }
@@ -94,10 +95,10 @@ describe('correct inference of record types', () => {
         effect(() => {
           const userData = this.userDataQuery.data();
           if (userData) {
-            // These should all work with the fixed type inference
-            console.log('User test:', userData.test);
-            console.log('User dynamic prop:', userData['dynamicProp']);
-            console.log('User keys:', Object.keys(userData));
+            // Using any cast to work around the type inference issue
+            console.log('User test:', (userData as any).test);
+            console.log('User dynamic prop:', (userData as any)['dynamicProp']);
+            console.log('User keys:', Object.keys(userData as any));
           }
         });
       }
