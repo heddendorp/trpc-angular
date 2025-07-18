@@ -53,7 +53,7 @@ interface UndefinedTRPCQueryOptionsOut<TQueryFnData, TOutput, TError>
 interface DefinedTRPCQueryOptionsIn<TQueryFnData, TData, TError>
   extends DistributiveOmit<
     DefinedInitialDataOptions<
-      coerceAsyncIterableToArray<NoInfer<TQueryFnData>>,
+      coerceAsyncIterableToArray<TQueryFnData>,
       TError,
       coerceAsyncIterableToArray<TData>,
       TRPCQueryKey
@@ -97,7 +97,7 @@ interface UnusedSkipTokenTRPCQueryOptionsOut<TQueryFnData, TOutput, TError>
 }
 
 export interface TRPCQueryOptions<TDef extends ResolverDef> {
-  <TQueryFnData extends TDef['output'], TData = TQueryFnData>(
+  <TQueryFnData = TDef['output'], TData = TQueryFnData>(
     input: TDef['input'],
     opts: DefinedTRPCQueryOptionsIn<
       TQueryFnData,
@@ -115,7 +115,7 @@ export interface TRPCQueryOptions<TDef extends ResolverDef> {
       errorShape: TDef['errorShape'];
     }>
   >;
-  <TQueryFnData extends TDef['output'], TData = TQueryFnData>(
+  <TQueryFnData = TDef['output'], TData = TQueryFnData>(
     input: TDef['input'],
     opts?: UnusedSkipTokenTRPCQueryOptionsIn<
       TQueryFnData,
@@ -133,7 +133,7 @@ export interface TRPCQueryOptions<TDef extends ResolverDef> {
       errorShape: TDef['errorShape'];
     }>
   >;
-  <TQueryFnData extends TDef['output'], TData = TQueryFnData>(
+  <TQueryFnData = TDef['output'], TData = TQueryFnData>(
     input: TDef['input'],
     opts?: UndefinedTRPCQueryOptionsIn<
       TQueryFnData,
