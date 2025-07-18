@@ -2,11 +2,15 @@ import { initTRPC } from '@trpc/server';
 import { z } from 'zod';
 import { observable } from '@trpc/server/observable';
 
-const t = initTRPC.create();
+const t = initTRPC.context<{user?:Record<string, any>}>().create();
 
 export const appRouter = t.router({
   hello: t.procedure.query(() => {
     return 'Hello world';
+  }),
+
+  userContext: t.procedure.query(({ ctx }) => {
+    return ctx.user;
   }),
 
   greet: t.procedure
@@ -41,7 +45,7 @@ export const appRouter = t.router({
 
   // For infinite query tests
   getUsers: t.procedure
-    .input(z.object({ 
+    .input(z.object({
       cursor: z.number().optional(),
       limit: z.number().min(1).max(100).default(10)
     }))
@@ -51,7 +55,7 @@ export const appRouter = t.router({
         id: cursor + i + 1,
         name: `User ${cursor + i + 1}`
       }));
-      
+
       return {
         users,
         nextCursor: cursor + limit < 100 ? cursor + limit : undefined
