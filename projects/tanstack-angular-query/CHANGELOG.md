@@ -1,5 +1,11 @@
 # @heddendorp/tanstack-angular-query
 
+## 0.1.1
+
+### Patch Changes
+
+- bb1d8c9: Fix a rare error with query return inference
+
 ## 0.1.0
 
 ### Minor Changes
