@@ -11,15 +11,19 @@ export type WithRequired<TObj, TKey extends keyof TObj> = TObj & {
 
 /**
  * Fix for TypeScript inference issue with Record<string, any> types
+ * This addresses cases where TypeScript incorrectly infers function types
+ * when Record types are expected, particularly in complex type chains.
  * @internal
  */
-export type FixRecordInference<T> = T extends (...args: any[]) => any
-  ? T extends (...args: any[]) => Record<string, any>
-    ? T
-    : Record<string, any>
-  : T extends Record<string, any>
-    ? { [K in keyof T]: T[K] } & { [key: string]: any }
-    : T;
+export type FixRecordInference<T> = 
+  // If T is a function type but we expect it to be a Record, fix it
+  T extends (...args: any[]) => any
+    ? T extends (...args: any[]) => Record<string, any>
+      ? T // Keep legitimate function types that return Records
+      : Record<string, any> // Convert incorrect function types to Record
+    : T extends Record<string, any>
+      ? { [K in keyof T]: T[K] } & { [key: string]: any }
+      : T;
 
 /**
  * @internal
