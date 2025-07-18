@@ -38,7 +38,7 @@ export function getClientArgs<TOptions>(
   let input = queryKey[1]?.input;
   if (infiniteParams) {
     input = {
-      ...(input ?? {}),
+      ...(input && typeof input === 'object' ? input : {}),
       ...(infiniteParams.pageParam !== undefined
         ? { cursor: infiniteParams.pageParam }
         : {}),
@@ -95,7 +95,7 @@ export function getQueryKeyInternal(
   // https://github.com/trpc/trpc/issues/3128
 
   // some parts of the path may be dot-separated, split them up
-  const splitPath = path.flatMap((part) => part.split('.'));
+  const splitPath = path.reduce((acc, part) => acc.concat(part.split('.')), [] as string[]);
 
   if (!input && (!type || type === 'any')) {
     // this matches also all mutations (see `getMutationKeyInternal`)
@@ -141,7 +141,7 @@ export function getMutationKeyInternal(
   path: readonly string[],
 ): TRPCMutationKey {
   // some parts of the path may be dot-separated, split them up
-  const splitPath = path.flatMap((part) => part.split('.'));
+  const splitPath = path.reduce((acc, part) => acc.concat(part.split('.')), [] as string[]);
 
   return splitPath.length ? [splitPath] : ([] as unknown as TRPCMutationKey);
 }

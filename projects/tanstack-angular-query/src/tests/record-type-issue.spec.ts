@@ -36,6 +36,12 @@ const testRecordRouter = t.router({
     .query(({ input }): { data?: Record<string, any> } => {
       return { data: { [input.id]: 'some value' } };
     }),
+
+  getStringOrUndefined: t.procedure
+    .input(z.object({ id: z.string() }))
+    .query(({ input }): string | undefined => {
+      return input.id === 'notfound' ? undefined : 'found';
+    }),
 });
 
 type TestRecordRouter = typeof testRecordRouter;
@@ -187,5 +193,41 @@ describe('Record Type Issue', () => {
     
     // Template should not throw during compilation
     expect(() => fixture.detectChanges()).not.toThrow();
+  });
+
+  it('should handle union types without being inferred as never', () => {
+    @Component({
+      template: `<div>Test</div>`,
+    })
+    class TestUnionComponent {
+      private trpc = injectTRPC<TestRecordRouter>();
+      
+      // Test various union types that previously caused issues
+      recordUnionQuery = injectQuery(() => 
+        this.trpc.getRecordOrUndefined.queryOptions({ id: 'test' })
+      );
+      
+      stringUnionQuery = injectQuery(() => 
+        this.trpc.getStringOrUndefined.queryOptions({ id: 'test' })
+      );
+      
+      // Test that non-union types still work
+      nonUnionQuery = injectQuery(() => 
+        this.trpc.getRecord.queryOptions({ id: 'test' })
+      );
+    }
+    
+    const fixture = TestBed.createComponent(TestUnionComponent);
+    const component = fixture.componentInstance;
+    
+    // All queries should be properly typed and not inferred as never
+    expect(component.recordUnionQuery).toBeDefined();
+    expect(component.stringUnionQuery).toBeDefined();
+    expect(component.nonUnionQuery).toBeDefined();
+    
+    // Verify query functions are defined (would fail if type is never)
+    expect(component.recordUnionQuery.data).toBeDefined();
+    expect(component.stringUnionQuery.data).toBeDefined();
+    expect(component.nonUnionQuery.data).toBeDefined();
   });
 });
