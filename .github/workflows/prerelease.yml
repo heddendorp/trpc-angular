@@ -39,7 +39,7 @@ jobs:
         run: yarn build
 
       - name: Run tests
-        run: yarn test --watch=false --browsers=ChromeHeadless
+        run: yarn test
 
       - name: Create prerelease
         run: |
