@@ -82,8 +82,9 @@ ng test
 ## Documentation
 
 - [Integration Guide](examples/integration-guide.md) - How to use both packages together
-- [Standalone Examples](examples/) - Individual package examples
+- [Standalone Examples](examples/) - Individual package examples  
 - [Maintenance Guide](MAINTENANCE_GUIDE.md) - Development and publishing workflow
+- [Publishing Process](docs/PUBLISHING.md) - Custom publishing process for workspace dependencies
 
 ## Contributing
 
