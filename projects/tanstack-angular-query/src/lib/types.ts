@@ -14,12 +14,14 @@ export type WithRequired<TObj, TKey extends keyof TObj> = TObj & {
  * This ensures Record<string, any> types are properly preserved and not converted to function types
  * @internal
  */
-export type FixRecordInference<T> = T extends Record<string, any>
+export type FixRecordInference<T> = T extends Record<string, any> | undefined
   ? T extends (...args: any[]) => any
-    ? T extends Record<string, any>
-      ? T
-      : never
-    : T
+    ? T
+    : T extends Record<string, any>
+    ? T
+    : T extends undefined
+    ? T
+    : Record<string, any>
   : T;
 
 /**
