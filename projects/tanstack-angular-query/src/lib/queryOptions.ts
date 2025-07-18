@@ -14,6 +14,7 @@ import type {
 } from '@trpc/server/unstable-core-do-not-import';
 import { isAsyncIterable } from '@trpc/server/unstable-core-do-not-import';
 import type {
+  FixRecordInference,
   ResolverDef,
   TRPCQueryBaseOptions,
   TRPCQueryKey,
@@ -47,7 +48,7 @@ interface UndefinedTRPCQueryOptionsOut<TQueryFnData, TOutput, TError>
     TRPCQueryKey
   >,
     TRPCQueryOptionsResult {
-  queryKey: DataTag<TRPCQueryKey, coerceAsyncIterableToArray<TOutput>, TError>;
+  queryKey: DataTag<TRPCQueryKey, FixRecordInference<coerceAsyncIterableToArray<TOutput>>, TError>;
 }
 
 interface DefinedTRPCQueryOptionsIn<TQueryFnData, TData, TError>
@@ -70,7 +71,7 @@ interface DefinedTRPCQueryOptionsOut<TQueryFnData, TData, TError>
     TRPCQueryKey
   >,
     TRPCQueryOptionsResult {
-  queryKey: DataTag<TRPCQueryKey, coerceAsyncIterableToArray<TData>, TError>;
+  queryKey: DataTag<TRPCQueryKey, FixRecordInference<coerceAsyncIterableToArray<TData>>, TError>;
 }
 
 interface UnusedSkipTokenTRPCQueryOptionsIn<TQueryFnData, TData, TError>
@@ -93,11 +94,11 @@ interface UnusedSkipTokenTRPCQueryOptionsOut<TQueryFnData, TOutput, TError>
     TRPCQueryKey
   >,
     TRPCQueryOptionsResult {
-  queryKey: DataTag<TRPCQueryKey, coerceAsyncIterableToArray<TOutput>, TError>;
+  queryKey: DataTag<TRPCQueryKey, FixRecordInference<coerceAsyncIterableToArray<TOutput>>, TError>;
 }
 
 export interface TRPCQueryOptions<TDef extends ResolverDef> {
-  <TQueryFnData extends TDef['output'], TData = TQueryFnData>(
+  <TQueryFnData = FixRecordInference<TDef['output']>, TData = TQueryFnData>(
     input: TDef['input'],
     opts: DefinedTRPCQueryOptionsIn<
       TQueryFnData,
@@ -115,16 +116,24 @@ export interface TRPCQueryOptions<TDef extends ResolverDef> {
       errorShape: TDef['errorShape'];
     }>
   >;
-  <TQueryFnData extends TDef['output'], TData = TQueryFnData>(
-    input: TDef['input'],
-    opts?: UnusedSkipTokenTRPCQueryOptionsIn<
-      TQueryFnData,
-      TData,
-      TRPCClientErrorLike<{
-        transformer: TDef['transformer'];
-        errorShape: TDef['errorShape'];
-      }>
-    >,
+  <TQueryFnData = FixRecordInference<TDef['output']>, TData = TQueryFnData>(
+    ...args: TDef['input'] extends void
+      ? [opts?: UnusedSkipTokenTRPCQueryOptionsIn<
+          TQueryFnData,
+          TData,
+          TRPCClientErrorLike<{
+            transformer: TDef['transformer'];
+            errorShape: TDef['errorShape'];
+          }>
+        >]
+      : [input: TDef['input'], opts?: UnusedSkipTokenTRPCQueryOptionsIn<
+          TQueryFnData,
+          TData,
+          TRPCClientErrorLike<{
+            transformer: TDef['transformer'];
+            errorShape: TDef['errorShape'];
+          }>
+        >]
   ): UnusedSkipTokenTRPCQueryOptionsOut<
     TQueryFnData,
     TData,
@@ -133,16 +142,24 @@ export interface TRPCQueryOptions<TDef extends ResolverDef> {
       errorShape: TDef['errorShape'];
     }>
   >;
-  <TQueryFnData extends TDef['output'], TData = TQueryFnData>(
-    input: TDef['input'],
-    opts?: UndefinedTRPCQueryOptionsIn<
-      TQueryFnData,
-      TData,
-      TRPCClientErrorLike<{
-        transformer: TDef['transformer'];
-        errorShape: TDef['errorShape'];
-      }>
-    >,
+  <TQueryFnData = FixRecordInference<TDef['output']>, TData = TQueryFnData>(
+    ...args: TDef['input'] extends void
+      ? [opts?: UndefinedTRPCQueryOptionsIn<
+          TQueryFnData,
+          TData,
+          TRPCClientErrorLike<{
+            transformer: TDef['transformer'];
+            errorShape: TDef['errorShape'];
+          }>
+        >]
+      : [input: TDef['input'], opts?: UndefinedTRPCQueryOptionsIn<
+          TQueryFnData,
+          TData,
+          TRPCClientErrorLike<{
+            transformer: TDef['transformer'];
+            errorShape: TDef['errorShape'];
+          }>
+        >]
   ): UndefinedTRPCQueryOptionsOut<
     TQueryFnData,
     TData,
