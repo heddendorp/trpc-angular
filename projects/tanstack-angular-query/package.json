@@ -1,6 +1,6 @@
 {
   "name": "@heddendorp/tanstack-angular-query",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "TanStack Angular Query integration for tRPC",
   "main": "index.js",
   "module": "index.js",
