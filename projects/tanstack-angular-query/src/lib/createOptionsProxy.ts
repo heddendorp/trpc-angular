@@ -42,7 +42,6 @@ import type {
   TRPCMutationKey,
   TRPCQueryKey,
   WithRequired,
-  FixRecordInference,
 } from './types';
 import { getMutationKeyInternal, getQueryKeyInternal } from './utils';
 
@@ -261,7 +260,7 @@ export type DecoratedRouterRecord<
           $Value['_def']['type'],
           {
             input: inferProcedureInput<$Value>;
-            output: FixRecordInference<inferTransformedProcedureOutput<TRoot, $Value>>;
+            output: inferTransformedProcedureOutput<TRoot, $Value>;
             transformer: TRoot['transformer'];
             errorShape: TRoot['errorShape'];
           }

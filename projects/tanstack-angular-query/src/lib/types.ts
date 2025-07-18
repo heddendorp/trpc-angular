@@ -16,7 +16,9 @@ export type WithRequired<TObj, TKey extends keyof TObj> = TObj & {
 export type FixRecordInference<T> = T extends Record<string, any>
   ? T extends (...args: any[]) => any
     ? T
-    : { [K in keyof T]: T[K] } & { [key: string]: any }
+    : T extends undefined
+      ? T
+      : T
   : T;
 
 /**
