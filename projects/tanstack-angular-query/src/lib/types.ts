@@ -11,12 +11,15 @@ export type WithRequired<TObj, TKey extends keyof TObj> = TObj & {
 
 /**
  * Fix for TypeScript inference issue with Record<string, any> types
+ * This ensures Record<string, any> types are properly preserved and not converted to function types
  * @internal
  */
 export type FixRecordInference<T> = T extends Record<string, any>
   ? T extends (...args: any[]) => any
-    ? T
-    : T  // Just return T as-is for Record types that aren't functions
+    ? T extends Record<string, any>
+      ? T
+      : never
+    : T
   : T;
 
 /**

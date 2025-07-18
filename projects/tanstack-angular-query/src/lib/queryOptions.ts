@@ -152,7 +152,7 @@ export interface TRPCQueryOptions<TDef extends ResolverDef> {
     }>
   >;
   
-  // Overload for procedures without input (when input is void)
+  // For procedures with void input - no input parameter needed
   <TQueryFnData extends TDef['output'], TData = TQueryFnData>(
     opts?: UndefinedTRPCQueryOptionsIn<
       TQueryFnData,
@@ -171,7 +171,7 @@ export interface TRPCQueryOptions<TDef extends ResolverDef> {
     }>
   > : never;
   
-  // Default case when called without arguments (for procedures with void input)
+  // For procedures with void input - no arguments at all
   <TQueryFnData extends TDef['output'], TData = TQueryFnData>(): TDef['input'] extends void ? UndefinedTRPCQueryOptionsOut<
     TQueryFnData,
     TData,
