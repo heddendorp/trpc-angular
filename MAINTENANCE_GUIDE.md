@@ -281,10 +281,55 @@ npm publish --access public
 2. **Create changeset** using `yarn changeset`
 3. **Create PR** and merge to main (changeset file included)
 4. **Changesets action** creates a "Version Packages" PR with:
-   - Updated version numbers
-   - Generated changelog entries
-   - Updated package.json files
+  - Updated version numbers
+  - Generated changelog entries
+  - Updated package.json files
 5. **Merge version PR** to trigger automatic publishing to npm
+
+### Prerelease Process
+
+For testing changes before official releases, you can create prereleases using the GitHub Actions workflow:
+
+#### Manual Prerelease (Recommended)
+
+1. **Navigate to GitHub Actions**:
+  - Go to the repository on GitHub
+  - Click on "Actions" tab
+  - Select "Prerelease" workflow
+
+2. **Trigger Prerelease**:
+  - Click "Run workflow"
+  - Select the branch you want to release from
+  - Choose a prerelease tag (e.g., `alpha`, `beta`, `rc`)
+  - Click "Run workflow"
+
+3. **The workflow will**:
+  - Build and test the packages
+  - Create snapshot versions (e.g., `0.1.0-alpha-20240101123456`)
+  - Publish to npm with the prerelease tag
+  - Clean up temporary files
+
+#### Using Prerelease Packages
+
+Install prerelease packages using the tag:
+
+```bash
+# Install alpha prerelease
+npm install @heddendorp/trpc-link-angular@alpha
+npm install @heddendorp/tanstack-angular-query@alpha
+
+# Install beta prerelease
+npm install @heddendorp/trpc-link-angular@beta
+npm install @heddendorp/tanstack-angular-query@beta
+```
+
+#### Prerelease Notes
+
+- Prereleases can be triggered from any branch
+- No changesets are required - the workflow will create temporary ones
+- Prerelease versions use timestamp-based naming
+- Published packages are tagged with the specified prerelease tag
+- Original package versions and changesets remain unchanged
 
 ### Pre-publishing Checklist
 
@@ -309,9 +354,9 @@ npm publish --access public
    ```
 
 2. **TypeScript Errors**:
-   - Check peer dependency versions
-   - Ensure TypeScript version compatibility
-   - Verify Angular version compatibility
+  - Check peer dependency versions
+  - Ensure TypeScript version compatibility
+  - Verify Angular version compatibility
 
 3. **Dependency Conflicts**:
    ```bash
@@ -359,8 +404,8 @@ Keep peer dependencies updated:
 ### Version Management
 
 1. **Update version numbers** in:
-   - `projects/trpc-link-angular/package.json`
-   - `projects/tanstack-angular-query/package.json`
+  - `projects/trpc-link-angular/package.json`
+  - `projects/tanstack-angular-query/package.json`
 
 2. **Update CHANGELOG.md** with new features and breaking changes
 
