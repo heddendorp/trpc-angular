@@ -151,6 +151,35 @@ export interface TRPCQueryOptions<TDef extends ResolverDef> {
       errorShape: TDef['errorShape'];
     }>
   >;
+  
+  // For procedures with void input - no input parameter needed
+  <TQueryFnData extends TDef['output'], TData = TQueryFnData>(
+    opts?: UndefinedTRPCQueryOptionsIn<
+      TQueryFnData,
+      TData,
+      TRPCClientErrorLike<{
+        transformer: TDef['transformer'];
+        errorShape: TDef['errorShape'];
+      }>
+    >,
+  ): TDef['input'] extends void ? UndefinedTRPCQueryOptionsOut<
+    TQueryFnData,
+    TData,
+    TRPCClientErrorLike<{
+      transformer: TDef['transformer'];
+      errorShape: TDef['errorShape'];
+    }>
+  > : never;
+  
+  // For procedures with void input - no arguments at all
+  <TQueryFnData extends TDef['output'], TData = TQueryFnData>(): TDef['input'] extends void ? UndefinedTRPCQueryOptionsOut<
+    TQueryFnData,
+    TData,
+    TRPCClientErrorLike<{
+      transformer: TDef['transformer'];
+      errorShape: TDef['errorShape'];
+    }>
+  > : never;
 }
 
 type AnyTRPCQueryOptionsIn =

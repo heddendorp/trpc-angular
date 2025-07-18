@@ -2,12 +2,7 @@ import { initTRPC } from '@trpc/server';
 import { z } from 'zod';
 import { observable } from '@trpc/server/observable';
 
-// Define a specific type that includes expected properties
-type UserData = {
-  test: string;
-  [key: string]: any;
-};
-const t = initTRPC.context<{user?: UserData}>().create();
+const t = initTRPC.context<{user?:Record<string, any>}>().create();
 
 export const appRouter = t.router({
   hello: t.procedure.query(() => {
