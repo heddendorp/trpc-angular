@@ -1,0 +1,87 @@
+name: Prerelease
+
+on:
+  workflow_dispatch:
+    inputs:
+      prerelease_tag:
+        description: 'Prerelease tag (e.g., alpha, beta, rc)'
+        required: false
+        default: 'alpha'
+        type: string
+
+jobs:
+  prerelease:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Build packages
+        run: yarn build
+
+      - name: Run tests
+        run: yarn test --watch=false --browsers=ChromeHeadless
+
+      - name: Create prerelease
+        run: |
+          echo "🚀 Creating prerelease with tag: ${{ inputs.prerelease_tag }}"
+
+          # Check if there are any changesets
+          if [ -z "$(find .changeset -name '*.md' -not -name 'README.md' -not -name 'config.json')" ]; then
+            echo "📝 No changesets found. Creating a prerelease changeset..."
+            cat > .changeset/prerelease-$(date +%Y%m%d%H%M%S).md << EOF
+          ---
+          "@heddendorp/trpc-link-angular": patch
+          "@heddendorp/tanstack-angular-query": patch
+          ---
+
+          Prerelease build triggered manually from branch: ${{ github.ref_name }}
+          EOF
+          else
+            echo "✅ Found existing changesets"
+          fi
+
+          # Create a snapshot release
+          echo "🏗️  Creating snapshot versions..."
+          yarn changeset version --snapshot ${{ inputs.prerelease_tag }}
+
+          # Build packages again to ensure they're up-to-date
+          echo "📦 Building packages..."
+          yarn build
+
+          # Show the versions that will be published
+          echo "📊 Package versions to be published:"
+          cat projects/trpc-link-angular/package.json | grep '"version"'
+          cat projects/tanstack-angular-query/package.json | grep '"version"'
+
+          # Publish the prerelease
+          echo "🚀 Publishing prerelease..."
+          yarn changeset publish --tag ${{ inputs.prerelease_tag }}
+
+          # Clean up temporary files (don't commit snapshot changes)
+          echo "🧹 Cleaning up temporary files..."
+          git checkout -- projects/ .changeset/
+
+          echo "✅ Prerelease completed successfully!"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
