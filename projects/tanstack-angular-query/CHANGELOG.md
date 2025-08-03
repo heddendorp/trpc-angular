@@ -1,5 +1,15 @@
 # @heddendorp/tanstack-angular-query
 
+## 0.2.0
+
+### Minor Changes
+
+- 6977ee0: Align to trpc implementation
+
+### Patch Changes
+
+- 5991366: Fix return type inference
+
 ## 0.1.0
 
 ### Minor Changes
