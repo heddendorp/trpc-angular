@@ -1,7 +1,7 @@
 import type {
+  CreateMutationOptions,
   MutationFunction,
   QueryClient,
-  CreateMutationOptions
 } from '@tanstack/angular-query-experimental';
 import type { TRPCClientErrorLike, TRPCUntypedClient } from '@trpc/client';
 import type {
@@ -25,9 +25,9 @@ type ReservedOptions = 'mutationKey' | 'mutationFn';
 
 interface TRPCMutationOptionsIn<TInput, TError, TOutput, TContext>
   extends DistributiveOmit<
-    CreateMutationOptions<TOutput, TError, TInput, TContext>,
-    ReservedOptions
-  >,
+      CreateMutationOptions<TOutput, TError, TInput, TContext>,
+      ReservedOptions
+    >,
     TRPCQueryBaseOptions {}
 
 interface TRPCMutationOptionsOut<TInput, TError, TOutput, TContext>
@@ -57,13 +57,10 @@ export interface TRPCMutationOptions<TDef extends ResolverDef> {
  */
 export interface MutationOptionsOverride {
   onSuccess: (opts: {
-    /**
-     * Calls the original function that was defined in the query's `onSuccess` option
-     */
-    originalFn: () => MaybePromise<void>;
+    originalFn: () => unknown;
     queryClient: QueryClient;
     /**
-     * Meta data passed in from the `injectMutation()` hook
+     * Meta data passed in from the `useMutation()` hook
      */
     meta: Record<string, unknown>;
   }) => MaybePromise<void>;
@@ -102,7 +99,7 @@ export function trpcMutationOptions(args: {
     queryClient.getMutationDefaults(mutationKey),
   );
 
-  const mutationSuccessOverride: MutationOptionsOverride['onSuccess'] =
+  const mutationSuccessOverride: (options: any) => unknown =
     overrides?.onSuccess ?? ((options) => options.originalFn());
 
   const mutationFn: MutationFunction = async (input) => {
