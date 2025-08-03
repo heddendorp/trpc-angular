@@ -2,14 +2,7 @@
  * Public API Surface of tanstack-angular-query
  */
 
-export {
-  provideTRPC,
-  createTRPCClientFactory,
-  injectTRPC,
-  injectTRPCClient,
-  createTRPCInjectors,
-} from './lib/context';
-export type { TRPCClientFactory } from './lib/context';
+export { createTRPCInjectors, injectTRPC, injectTRPCClient, provideTRPC } from './lib/context';
 export type {
   TRPCOptionsProxy,
   inferInput,
@@ -33,5 +26,4 @@ export type {
   TRPCSubscriptionResult,
 } from './lib/subscriptionOptions';
 export { createTRPCOptionsProxy } from './lib/createOptionsProxy';
-export { injectTRPCSubscription } from './lib/subscriptionOptions';
 export type * from './lib/types';
