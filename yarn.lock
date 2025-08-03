@@ -553,7 +553,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@changesets/cli@npm:^2.27.9":
+"@changesets/cli@npm:^2.29.5":
   version: 2.29.5
   resolution: "@changesets/cli@npm:2.29.5"
   dependencies:
@@ -6683,7 +6683,7 @@ __metadata:
     "@angular/forms": "npm:^20.1.0"
     "@angular/platform-browser": "npm:^20.1.0"
     "@angular/router": "npm:^20.1.0"
-    "@changesets/cli": "npm:^2.27.9"
+    "@changesets/cli": "npm:^2.29.5"
     "@tanstack/angular-query-experimental": "npm:^5.83.0"
     "@trpc/client": "npm:^11.4.3"
     "@trpc/server": "npm:^11.4.3"
