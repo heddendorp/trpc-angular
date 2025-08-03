@@ -3,13 +3,11 @@ import type {
   DefinedInitialDataInfiniteOptions,
   QueryClient,
   QueryFunction,
+  SkipToken,
   UndefinedInitialDataInfiniteOptions,
   UnusedSkipTokenInfiniteOptions,
 } from '@tanstack/angular-query-experimental';
-import {
-  infiniteQueryOptions,
-  skipToken,
-} from '@tanstack/angular-query-experimental';
+import { infiniteQueryOptions, skipToken } from '@tanstack/angular-query-experimental';
 import type { TRPCClientErrorLike, TRPCUntypedClient } from '@trpc/client';
 import type { DistributiveOmit } from '@trpc/server/unstable-core-do-not-import';
 import type {
@@ -144,7 +142,7 @@ interface UnusedSkipTokenTRPCInfiniteQueryOptionsOut<
 
 export interface TRPCInfiniteQueryOptions<TDef extends ResolverDef> {
   <TQueryFnData extends TDef['output'], TData = TQueryFnData>(
-    input: TDef['input'],
+    input: TDef['input'] | SkipToken,
     opts: DefinedTRPCInfiniteQueryOptionsIn<
       TDef['input'],
       TQueryFnData,
@@ -165,7 +163,7 @@ export interface TRPCInfiniteQueryOptions<TDef extends ResolverDef> {
   >;
   <TQueryFnData extends TDef['output'], TData = TQueryFnData>(
     input: TDef['input'],
-    opts?: UnusedSkipTokenTRPCInfiniteQueryOptionsIn<
+    opts: UnusedSkipTokenTRPCInfiniteQueryOptionsIn<
       TDef['input'],
       TQueryFnData,
       TData,
@@ -184,7 +182,7 @@ export interface TRPCInfiniteQueryOptions<TDef extends ResolverDef> {
     }>
   >;
   <TQueryFnData extends TDef['output'], TData = TQueryFnData>(
-    input: TDef['input'],
+    input: TDef['input'] | SkipToken,
     opts?: UndefinedTRPCInfiniteQueryOptionsIn<
       TDef['input'],
       TQueryFnData,
@@ -206,22 +204,19 @@ export interface TRPCInfiniteQueryOptions<TDef extends ResolverDef> {
 }
 
 type AnyTRPCInfiniteQueryOptionsIn =
-  | DefinedTRPCInfiniteQueryOptionsIn<any, unknown, unknown, unknown>
-  | UnusedSkipTokenTRPCInfiniteQueryOptionsIn<any, unknown, unknown, unknown>
-  | UndefinedTRPCInfiniteQueryOptionsIn<any, unknown, unknown, unknown>;
+  | DefinedTRPCInfiniteQueryOptionsIn<any, any, any, any>
+  | UnusedSkipTokenTRPCInfiniteQueryOptionsIn<any, any, any, any>
+  | UndefinedTRPCInfiniteQueryOptionsIn<any, any, any, any>;
 
 type AnyTRPCInfiniteQueryOptionsOut =
-  | DefinedTRPCInfiniteQueryOptionsOut<any, unknown, unknown, unknown>
-  | UnusedSkipTokenTRPCInfiniteQueryOptionsOut<any, unknown, unknown, unknown>
-  | UndefinedTRPCInfiniteQueryOptionsOut<any, unknown, unknown, unknown>;
+  | DefinedTRPCInfiniteQueryOptionsOut<any, any, any, any>
+  | UnusedSkipTokenTRPCInfiniteQueryOptionsOut<any, any, any, any>
+  | UndefinedTRPCInfiniteQueryOptionsOut<any, any, any, any>;
 
-/**
- * @internal
- */
 export function trpcInfiniteQueryOptions(args: {
   input: unknown;
   query: typeof TRPCUntypedClient.prototype.query;
-  queryClient: QueryClient;
+  queryClient: QueryClient | (() => QueryClient);
   path: readonly string[];
   queryKey: TRPCQueryKey;
   opts: AnyTRPCInfiniteQueryOptionsIn;
@@ -229,37 +224,36 @@ export function trpcInfiniteQueryOptions(args: {
   const { input, query, path, queryKey, opts } = args;
   const inputIsSkipToken = input === skipToken;
 
-  const queryFn: QueryFunction<unknown, TRPCQueryKey> = async ({
-    queryKey,
-    signal,
-    pageParam,
-    direction,
-  }) => {
+  const queryFn: QueryFunction<unknown, TRPCQueryKey, unknown> = async (
+    queryFnContext,
+  ) => {
     const actualOpts = {
       ...opts,
       trpc: {
         ...opts?.trpc,
-        ...(opts?.trpc?.abortOnUnmount ? { signal } : { signal: null }),
+        ...(opts?.trpc?.abortOnUnmount
+          ? { signal: queryFnContext.signal }
+          : { signal: null }),
       },
     };
 
-    const actualArgs = getClientArgs(queryKey, actualOpts, {
-      pageParam,
-      direction: direction as 'forward' | 'backward',
-    });
+    const result = await query(
+      ...getClientArgs(queryKey, actualOpts, {
+        direction: queryFnContext.direction,
+        pageParam: queryFnContext.pageParam,
+      }),
+    );
 
-    return await query(...actualArgs);
+    return result;
   };
-
-  const { initialCursor, ...restOpts } = opts as any;
 
   return Object.assign(
     infiniteQueryOptions({
-      ...restOpts,
+      ...opts,
       queryKey,
       queryFn: inputIsSkipToken ? skipToken : queryFn,
-      initialPageParam: initialCursor ?? null,
+      initialPageParam: opts?.initialCursor ?? (input as any)?.cursor,
     }),
     { trpc: createTRPCOptionsResult({ path }) },
-  ) as AnyTRPCInfiniteQueryOptionsOut;
+  );
 }

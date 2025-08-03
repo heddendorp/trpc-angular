@@ -1,7 +1,7 @@
 import type {
   MutationFunction,
   QueryClient,
-  CreateMutationOptions,
+  CreateMutationOptions
 } from '@tanstack/angular-query-experimental';
 import type { TRPCClientErrorLike, TRPCUntypedClient } from '@trpc/client';
 import type {
@@ -14,7 +14,12 @@ import type {
   TRPCQueryBaseOptions,
   TRPCQueryOptionsResult,
 } from './types';
-import { createTRPCOptionsResult, getClientArgs } from './utils';
+import {
+  createTRPCOptionsResult,
+  getClientArgs,
+  getMutationKeyInternal,
+  unwrapLazyArg,
+} from './utils';
 
 type ReservedOptions = 'mutationKey' | 'mutationFn';
 
@@ -83,35 +88,43 @@ type AnyTRPCMutationOptionsOut = TRPCMutationOptionsOut<
  */
 export function trpcMutationOptions(args: {
   mutate: typeof TRPCUntypedClient.prototype.mutation;
-  queryClient: QueryClient;
+  queryClient: QueryClient | (() => QueryClient);
   path: readonly string[];
-  mutationKey: TRPCMutationKey;
-  opts?: AnyTRPCMutationOptionsIn;
+  opts: AnyTRPCMutationOptionsIn;
+  overrides: MutationOptionsOverride | undefined;
 }): AnyTRPCMutationOptionsOut {
-  const { mutate, path, mutationKey, opts } = args;
+  const { mutate, path, opts, overrides } = args;
+  const queryClient = unwrapLazyArg(args.queryClient);
 
-  const mutationFn: MutationFunction<unknown, unknown> = async (input) => {
-    const actualOpts = {
-      ...opts,
-      trpc: {
-        ...opts?.trpc,
-      },
-    };
+  const mutationKey = getMutationKeyInternal(path);
 
-    const actualArgs = getClientArgs(
-      [path, { input, type: undefined }],
-      actualOpts,
-    );
+  const defaultOpts = queryClient.defaultMutationOptions(
+    queryClient.getMutationDefaults(mutationKey),
+  );
 
-    return await mutate(...actualArgs);
+  const mutationSuccessOverride: MutationOptionsOverride['onSuccess'] =
+    overrides?.onSuccess ?? ((options) => options.originalFn());
+
+  const mutationFn: MutationFunction = async (input) => {
+    const result = await mutate(...getClientArgs([path, { input }], opts));
+
+    return result;
   };
 
-  return Object.assign(
-    {
-      ...opts,
-      mutationKey,
-      mutationFn,
+  return {
+    ...opts,
+    mutationKey: mutationKey,
+    mutationFn,
+    onSuccess(...args) {
+      const originalFn = () =>
+        opts?.onSuccess?.(...args) ?? defaultOpts?.onSuccess?.(...args);
+
+      return mutationSuccessOverride({
+        originalFn,
+        queryClient,
+        meta: opts?.meta ?? defaultOpts?.meta ?? {},
+      });
     },
-    { trpc: createTRPCOptionsResult({ path }) },
-  );
+    trpc: createTRPCOptionsResult({ path }),
+  };
 }

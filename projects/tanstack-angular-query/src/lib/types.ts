@@ -10,16 +10,6 @@ export type WithRequired<TObj, TKey extends keyof TObj> = TObj & {
 };
 
 /**
- * Fix for TypeScript inference issue with Record<string, any> types
- * @internal
- */
-export type FixRecordInference<T> = T extends Record<string, any>
-  ? T extends (...args: any[]) => any
-    ? T
-    : { [K in keyof T]: T[K] } & { [key: string]: any }
-  : T;
-
-/**
  * @internal
  */
 export type ResolverDef = {
@@ -53,8 +43,8 @@ export type TRPCInfiniteData<TInput, TOutput> = InfiniteData<
 /**
  * @public
  */
-export interface TRPCAngularRequestOptions
-  // For Angular Query, we use their internal AbortSignals instead of letting the user pass their own
+export interface TRPCReactRequestOptions
+  // For RQ, we use their internal AbortSignals instead of letting the user pass their own
   extends Omit<TRPCRequestOptions, 'signal'> {
   /**
    * Opt out of SSR for this query by passing `ssr: false`
@@ -73,7 +63,7 @@ export interface TRPCQueryBaseOptions {
   /**
    * tRPC-related options
    */
-  trpc?: TRPCAngularRequestOptions;
+  trpc?: TRPCReactRequestOptions;
 }
 
 /**

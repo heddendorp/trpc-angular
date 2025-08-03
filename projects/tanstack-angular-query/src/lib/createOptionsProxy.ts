@@ -1,14 +1,10 @@
-import type {
-  DataTag,
-  QueryClient,
-  QueryFilters,
-} from '@tanstack/angular-query-experimental';
+import type { DataTag, QueryClient, QueryFilters } from '@tanstack/angular-query-experimental';
 import type {
   TRPCClient,
   TRPCClientErrorLike,
   TRPCRequestOptions,
 } from '@trpc/client';
-import { getUntypedClient, type TRPCUntypedClient } from '@trpc/client';
+import { getUntypedClient, TRPCUntypedClient } from '@trpc/client';
 import type {
   AnyTRPCProcedure,
   AnyTRPCRootTypes,
@@ -42,22 +38,27 @@ import type {
   TRPCMutationKey,
   TRPCQueryKey,
   WithRequired,
-  FixRecordInference,
 } from './types';
-import { getMutationKeyInternal, getQueryKeyInternal } from './utils';
+import {
+  getMutationKeyInternal,
+  getQueryKeyInternal,
+  unwrapLazyArg,
+} from './utils';
 
 export interface DecorateRouterKeyable {
   /**
    * Calculate the TanStack Query Key for any path, could be used to invalidate every procedure beneath this path
    *
-   * @see https://tanstack.com/query/latest/docs/framework/angular/guides/query-keys
+   * @see https://tanstack.com/query/latest/docs/framework/react/guides/query-keys
+   * @see https://trpc.io/docs/client/tanstack-react-query/usage#queryKey
    */
   pathKey: () => TRPCQueryKey;
 
   /**
    * Calculate a TanStack Query Filter for any path, could be used to manipulate every procedure beneath this path
    *
-   * @see https://tanstack.com/query/latest/docs/framework/angular/guides/filters
+   * @see https://tanstack.com/query/latest/docs/framework/react/guides/filters
+   * @see https://trpc.io/docs/client/tanstack-react-query/usage#queryFilter
    */
   pathFilter: (
     filters?: QueryFilters<TRPCQueryKey>,
@@ -92,18 +93,18 @@ export type inferOutput<
 export interface DecorateInfiniteQueryProcedure<TDef extends ResolverDef>
   extends TypeHelper<TDef> {
   /**
-   * Create a set of type-safe infinite query options that can be passed to `injectInfiniteQuery`, `prefetchInfiniteQuery` etc.
+   * Create a set of type-safe infinite query options that can be passed to `useInfiniteQuery`, `prefetchInfiniteQuery` etc.
    *
-   * @see https://tanstack.com/query/latest/docs/framework/angular/reference/infiniteQueryOptions#infinitequeryoptions
-
+   * @see https://tanstack.com/query/latest/docs/framework/react/reference/infiniteQueryOptions#infinitequeryoptions
+   * @see https://trpc.io/docs/client/tanstack-react-query/usage#infiniteQueryOptions
    */
   infiniteQueryOptions: TRPCInfiniteQueryOptions<TDef>;
 
   /**
    * Calculate the TanStack Query Key for a Infinite Query Procedure
    *
-   * @see https://tanstack.com/query/latest/docs/framework/angular/guides/query-keys
-
+   * @see https://tanstack.com/query/latest/docs/framework/react/guides/query-keys
+   * @see https://trpc.io/docs/client/tanstack-react-query/usage#queryKey
    */
   infiniteQueryKey: (input?: Partial<TDef['input']>) => DataTag<
     TRPCQueryKey,
@@ -117,8 +118,8 @@ export interface DecorateInfiniteQueryProcedure<TDef extends ResolverDef>
   /**
    * Calculate a TanStack Query Filter for a Infinite Query Procedure
    *
-   * @see https://tanstack.com/query/latest/docs/framework/angular/guides/filters
-
+   * @see https://tanstack.com/query/latest/docs/framework/react/guides/filters
+   * @see https://trpc.io/docs/client/tanstack-react-query/usage#queryFilter
    */
   infiniteQueryFilter: (
     input?: Partial<TDef['input']>,
@@ -146,23 +147,22 @@ export interface DecorateInfiniteQueryProcedure<TDef extends ResolverDef>
     'queryKey'
   >;
 }
-
 export interface DecorateQueryProcedure<TDef extends ResolverDef>
   extends TypeHelper<TDef>,
     DecorateRouterKeyable {
   /**
-   * Create a set of type-safe query options that can be passed to `injectQuery`, `prefetchQuery` etc.
+   * Create a set of type-safe query options that can be passed to `useQuery`, `prefetchQuery` etc.
    *
-   * @see https://tanstack.com/query/latest/docs/framework/angular/reference/queryOptions#queryoptions
-
+   * @see https://tanstack.com/query/latest/docs/framework/react/reference/queryOptions#queryoptions
+   * @see https://trpc.io/docs/client/tanstack-react-query/usage#queryOptions
    */
   queryOptions: TRPCQueryOptions<TDef>;
 
   /**
    * Calculate the TanStack Query Key for a Query Procedure
    *
-   * @see https://tanstack.com/query/latest/docs/framework/angular/guides/query-keys
-
+   * @see https://tanstack.com/query/latest/docs/framework/react/guides/query-keys
+   * @see https://trpc.io/docs/client/tanstack-react-query/usage#queryKey
    */
   queryKey: (input?: Partial<TDef['input']>) => DataTag<
     TRPCQueryKey,
@@ -176,8 +176,8 @@ export interface DecorateQueryProcedure<TDef extends ResolverDef>
   /**
    * Calculate a TanStack Query Filter for a Query Procedure
    *
-   * @see https://tanstack.com/query/latest/docs/framework/angular/guides/filters
-
+   * @see https://tanstack.com/query/latest/docs/framework/react/guides/filters
+   * @see https://trpc.io/docs/client/tanstack-react-query/usage#queryFilter
    */
   queryFilter: (
     input?: Partial<TDef['input']>,
@@ -209,25 +209,25 @@ export interface DecorateQueryProcedure<TDef extends ResolverDef>
 export interface DecorateMutationProcedure<TDef extends ResolverDef>
   extends TypeHelper<TDef> {
   /**
-   * Create a set of type-safe mutation options that can be passed to `injectMutation`
+   * Create a set of type-safe mutation options that can be passed to `useMutation`
    *
-
+   * @see https://trpc.io/docs/client/tanstack-react-query/usage#mutationOptions
    */
   mutationOptions: TRPCMutationOptions<TDef>;
 
   /**
    * Calculate the TanStack Mutation Key for a Mutation Procedure
    *
-
+   * @see https://trpc.io/docs/client/tanstack-react-query/usage#mutationKey
    */
   mutationKey: () => TRPCMutationKey;
 }
 
 export interface DecorateSubscriptionProcedure<TDef extends ResolverDef> {
   /**
-   * Create a set of type-safe subscription options that can be passed to `injectTRPCSubscription`
+   * Create a set of type-safe subscription options that can be passed to `useSubscription`
    *
-
+   * @see https://trpc.io/docs/client/tanstack-react-query/usage#subscriptionOptions
    */
   subscriptionOptions: TRPCSubscriptionOptions<TDef>;
 }
@@ -261,7 +261,7 @@ export type DecoratedRouterRecord<
           $Value['_def']['type'],
           {
             input: inferProcedureInput<$Value>;
-            output: FixRecordInference<inferTransformedProcedureOutput<TRoot, $Value>>;
+            output: inferTransformedProcedureOutput<TRoot, $Value>;
             transformer: TRoot['transformer'];
             errorShape: TRoot['errorShape'];
           }
@@ -278,7 +278,7 @@ export type TRPCOptionsProxy<TRouter extends AnyTRPCRouter> =
   DecorateRouterKeyable;
 
 export interface TRPCOptionsProxyOptionsBase {
-  queryClient: QueryClient;
+  queryClient: QueryClient | (() => QueryClient);
   overrides?: {
     mutations?: MutationOptionsOverride;
   };
@@ -306,170 +306,127 @@ export type TRPCOptionsProxyOptions<TRouter extends AnyTRPCRouter> =
     | TRPCOptionsProxyOptionsExternal<TRouter>
     );
 
-/**
- * Create a tRPC options proxy for Angular applications
- *
+type UtilsMethods =
+  | keyof DecorateQueryProcedure<any>
+  | keyof DecorateInfiniteQueryProcedure<any>
+  | keyof DecorateMutationProcedure<any>
+  | keyof DecorateSubscriptionProcedure<any>
+  | keyof DecorateRouterKeyable;
 
+/**
+ * Create a typed proxy from your router types. Can also be used on the server.
+ *
+ * @see https://trpc.io/docs/client/tanstack-react-query/setup#3b-setup-without-react-context
+ * @see https://trpc.io/docs/client/tanstack-react-query/server-components#5-create-a-trpc-caller-for-server-components
  */
 export function createTRPCOptionsProxy<TRouter extends AnyTRPCRouter>(
   opts: TRPCOptionsProxyOptions<TRouter>,
 ): TRPCOptionsProxy<TRouter> {
-  const { queryClient } = opts;
+  const callIt = (type: TRPCProcedureType): any => {
+    return (path: string, input: unknown, trpcOpts: TRPCRequestOptions) => {
+      if ('router' in opts) {
+        return Promise.resolve(unwrapLazyArg(opts.ctx)).then((ctx) =>
+          callTRPCProcedure({
+            router: opts.router,
+            path: path,
+            getRawInput: async () => input,
+            ctx: ctx,
+            type: type,
+            signal: undefined,
+          }),
+        );
+      }
 
-  const client = (() => {
-    if ('client' in opts) {
-      return getUntypedClient(opts.client as TRPCClient<TRouter>);
-    }
+      const untypedClient =
+        opts.client instanceof TRPCUntypedClient
+          ? opts.client
+          : getUntypedClient(opts.client);
 
-    return {
-      query: async (path: string, input: unknown, options?: TRPCRequestOptions) => {
-        const ctx = typeof opts.ctx === 'function' ? await (opts.ctx as any)() : opts.ctx;
-        return callTRPCProcedure({
+      return untypedClient[type](path, input, trpcOpts);
+    };
+  };
+
+  return createTRPCRecursiveProxy(({ args, path: _path }) => {
+    const path = [..._path];
+    const utilName = path.pop() as UtilsMethods;
+    const [arg1, arg2] = args as any[];
+
+    const contextMap: Record<UtilsMethods, () => unknown> = {
+      '~types': undefined as any,
+
+      pathKey: () => {
+        return getQueryKeyInternal(path);
+      },
+      pathFilter: (): QueryFilters => {
+        return {
+          ...arg1,
+          queryKey: getQueryKeyInternal(path),
+        };
+      },
+
+      queryOptions: () => {
+        return trpcQueryOptions({
+          input: arg1,
+          opts: arg2,
           path,
-          getRawInput: async () => input,
-          router: opts.router,
-          ctx,
-          type: 'query',
-          signal: options?.signal,
+          queryClient: opts.queryClient,
+          queryKey: getQueryKeyInternal(path, arg1, 'query'),
+          query: callIt('query'),
         });
       },
-      mutation: async (
-        path: string,
-        input: unknown,
-        options?: TRPCRequestOptions,
-      ) => {
-        const ctx = typeof opts.ctx === 'function' ? await (opts.ctx as any)() : opts.ctx;
-        return callTRPCProcedure({
+      queryKey: () => {
+        return getQueryKeyInternal(path, arg1, 'query');
+      },
+      queryFilter: (): QueryFilters => {
+        return {
+          ...arg2,
+          queryKey: getQueryKeyInternal(path, arg1, 'query'),
+        };
+      },
+
+      infiniteQueryOptions: () => {
+        return trpcInfiniteQueryOptions({
+          input: arg1,
+          opts: arg2,
           path,
-          getRawInput: async () => input,
-          router: opts.router,
-          ctx,
-          type: 'mutation',
-          signal: options?.signal,
+          queryClient: opts.queryClient,
+          queryKey: getQueryKeyInternal(path, arg1, 'infinite'),
+          query: callIt('query'),
         });
       },
-      subscription: async (
-        path: string,
-        input: unknown,
-        options?: TRPCRequestOptions,
-      ) => {
-        const ctx = typeof opts.ctx === 'function' ? await (opts.ctx as any)() : opts.ctx;
-        return callTRPCProcedure({
+      infiniteQueryKey: () => {
+        return getQueryKeyInternal(path, arg1, 'infinite');
+      },
+      infiniteQueryFilter: (): QueryFilters => {
+        return {
+          ...arg2,
+          queryKey: getQueryKeyInternal(path, arg1, 'infinite'),
+        };
+      },
+
+      mutationOptions: () => {
+        return trpcMutationOptions({
+          opts: arg1,
           path,
-          getRawInput: async () => input,
-          router: opts.router,
-          ctx,
-          type: 'subscription',
-          signal: options?.signal,
+          queryClient: opts.queryClient,
+          mutate: callIt('mutation'),
+          overrides: opts.overrides?.mutations,
         });
       },
-    } as unknown as TRPCUntypedClient<TRouter>;
-  })();
+      mutationKey: () => {
+        return getMutationKeyInternal(path);
+      },
 
-  return createTRPCRecursiveProxy(({ path, args }) => {
-    const pathCopy = [...path];
-    const lastPart = pathCopy.pop();
+      subscriptionOptions: () => {
+        return trpcSubscriptionOptions({
+          opts: arg2,
+          path,
+          queryKey: getQueryKeyInternal(path, arg1, 'any'),
+          subscribe: callIt('subscription'),
+        });
+      },
+    };
 
-    if (!lastPart) {
-      throw new Error('Invalid path');
-    }
-
-    const input = args[0];
-    const opts = args[1];
-
-    const queryKey = getQueryKeyInternal(pathCopy, input, 'query');
-    const mutationKey = getMutationKeyInternal(pathCopy);
-
-    if (lastPart === 'queryOptions') {
-      const queryFn = client.query.bind(client);
-      return trpcQueryOptions({
-        input,
-        query: queryFn,
-        queryClient,
-        path: pathCopy,
-        queryKey,
-        opts: opts as any,
-      });
-    }
-
-    if (lastPart === 'infiniteQueryOptions') {
-      const queryFn = client.query.bind(client);
-      return trpcInfiniteQueryOptions({
-        input,
-        query: queryFn,
-        queryClient,
-        path: pathCopy,
-        queryKey: getQueryKeyInternal(pathCopy, input, 'infinite'),
-        opts: opts as any,
-      });
-    }
-
-    if (lastPart === 'mutationOptions') {
-      const mutateFn = client.mutation.bind(client);
-      return trpcMutationOptions({
-        mutate: mutateFn,
-        queryClient,
-        path: pathCopy,
-        mutationKey,
-        opts: opts as any,
-      });
-    }
-
-    if (lastPart === 'subscriptionOptions') {
-      const subscribeFn = client.subscription.bind(client);
-      return trpcSubscriptionOptions({
-        input,
-        subscribe: subscribeFn,
-        path: pathCopy,
-        queryKey,
-        opts: opts as any,
-      });
-    }
-
-    if (lastPart === 'queryKey') {
-      return getQueryKeyInternal(pathCopy, input, 'query');
-    }
-
-    if (lastPart === 'infiniteQueryKey') {
-      return getQueryKeyInternal(pathCopy, input, 'infinite');
-    }
-
-    if (lastPart === 'mutationKey') {
-      return getMutationKeyInternal(pathCopy);
-    }
-
-    if (lastPart === 'queryFilter') {
-      return {
-        ...(opts as any),
-        queryKey: getQueryKeyInternal(pathCopy, input, 'query'),
-      };
-    }
-
-    if (lastPart === 'infiniteQueryFilter') {
-      return {
-        ...(opts as any),
-        queryKey: getQueryKeyInternal(pathCopy, input, 'infinite'),
-      };
-    }
-
-    if (lastPart === 'pathKey') {
-      return getQueryKeyInternal(pathCopy, undefined, 'any');
-    }
-
-    if (lastPart === 'pathFilter') {
-      return {
-        ...(input as any),
-        queryKey: getQueryKeyInternal(pathCopy, undefined, 'any'),
-      };
-    }
-
-    // If we reach here, continue building the path
-    return createTRPCRecursiveProxy(({ path: nextPath, args: nextArgs }) => {
-      const proxy = createTRPCOptionsProxy(opts as TRPCOptionsProxyOptions<TRouter>);
-      return (proxy as any)({
-        path: [...path, ...nextPath],
-        args: nextArgs,
-      });
-    });
+    return contextMap[utilName]();
   });
 }

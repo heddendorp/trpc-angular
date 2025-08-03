@@ -1,7 +1,4 @@
-import {
-  skipToken,
-  type QueryClient,
-} from '@tanstack/angular-query-experimental';
+import { skipToken, type QueryClient } from '@tanstack/angular-query-experimental';
 import { isFunction, isObject } from '@trpc/server/unstable-core-do-not-import';
 import type {
   QueryType,

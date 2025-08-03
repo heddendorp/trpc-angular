@@ -1,9 +1,9 @@
+import type { SkipToken } from '@tanstack/angular-query-experimental';
 import { skipToken } from '@tanstack/angular-query-experimental';
 import type { TRPCClientErrorLike, TRPCUntypedClient } from '@trpc/client';
 import type { TRPCConnectionState } from '@trpc/client/unstable-internals';
 import type { Unsubscribable } from '@trpc/server/observable';
 import type { inferAsyncIterableYield } from '@trpc/server/unstable-core-do-not-import';
-import { inject, signal, effect, Injector, DestroyRef } from '@angular/core';
 import type {
   ResolverDef,
   TRPCQueryKey,
@@ -47,8 +47,9 @@ export interface TRPCSubscriptionOptions<TDef extends ResolverDef> {
     inferAsyncIterableYield<TDef['output']>,
     TRPCClientErrorLike<TDef>
   >;
+
   (
-    input: TDef['input'],
+    input: TDef['input'] | SkipToken,
     opts?: BaseTRPCSubscriptionOptionsIn<
       inferAsyncIterableYield<TDef['output']>,
       TRPCClientErrorLike<TDef>
@@ -99,20 +100,19 @@ export interface TRPCSubscriptionPendingResult<TOutput>
 export interface TRPCSubscriptionErrorResult<TOutput, TError>
   extends TRPCSubscriptionBaseResult<TOutput, TError> {
   status: 'error';
-  data: undefined | TOutput;
+  data: TOutput | undefined;
   error: TError;
 }
 
 export type TRPCSubscriptionResult<TOutput, TError> =
   | TRPCSubscriptionIdleResult<TOutput>
   | TRPCSubscriptionConnectingResult<TOutput, TError>
-  | TRPCSubscriptionPendingResult<TOutput>
-  | TRPCSubscriptionErrorResult<TOutput, TError>;
+  | TRPCSubscriptionErrorResult<TOutput, TError>
+  | TRPCSubscriptionPendingResult<TOutput>;
 
-type AnyTRPCSubscriptionOptionsIn = BaseTRPCSubscriptionOptionsIn<
-  unknown,
-  unknown
->;
+type AnyTRPCSubscriptionOptionsIn =
+  | BaseTRPCSubscriptionOptionsIn<unknown, unknown>
+  | UnusedSkipTokenTRPCSubscriptionOptionsIn<unknown, unknown>;
 
 type AnyTRPCSubscriptionOptionsOut = TRPCSubscriptionOptionsOut<
   unknown,
@@ -122,121 +122,41 @@ type AnyTRPCSubscriptionOptionsOut = TRPCSubscriptionOptionsOut<
 /**
  * @internal
  */
-export function trpcSubscriptionOptions(args: {
-  input: unknown;
+export const trpcSubscriptionOptions = (args: {
   subscribe: typeof TRPCUntypedClient.prototype.subscription;
   path: readonly string[];
   queryKey: TRPCQueryKey;
   opts?: AnyTRPCSubscriptionOptionsIn;
-}): AnyTRPCSubscriptionOptionsOut {
-  const { input, subscribe, path, queryKey, opts } = args;
-  const inputIsSkipToken = input === skipToken;
+}): AnyTRPCSubscriptionOptionsOut => {
+  const { subscribe, path, queryKey, opts = {} } = args;
+  const input = queryKey[1]?.input;
+  const enabled = 'enabled' in opts ? !!opts.enabled : input !== skipToken;
 
-  const enabled = opts?.enabled ?? true;
-
-  const subscriptionFn = (
-    innerOpts: UnusedSkipTokenTRPCSubscriptionOptionsIn<unknown, unknown>,
+  const _subscribe: ReturnType<TRPCSubscriptionOptions<any>>['subscribe'] = (
+    innerOpts,
   ) => {
-    const actualOpts = {
-      ...opts,
-      ...innerOpts,
-    };
-
-    return subscribe(path.join('.'), input, actualOpts);
+    return subscribe(path.join('.'), input ?? undefined, innerOpts);
   };
 
-  return Object.assign(
-    {
-      ...opts,
-      enabled: inputIsSkipToken ? false : enabled,
-      queryKey,
-      subscribe: subscriptionFn,
-    },
-    { trpc: createTRPCOptionsResult({ path }) },
-  );
-}
-
-/**
- * Angular hook for tRPC subscriptions
- */
-export function injectTRPCSubscription<TOutput, TError>(
-  subscriptionOptions: TRPCSubscriptionOptionsOut<TOutput, TError>,
-  injector?: Injector,
-): TRPCSubscriptionResult<TOutput, TError> {
-  const currentInjector = injector ?? inject(Injector);
-  const destroyRef = currentInjector.get(DestroyRef);
-
-  // Create reactive signals for subscription state
-  const statusSignal = signal<TRPCSubscriptionStatus>('idle');
-  const dataSignal = signal<TOutput | undefined>(undefined);
-  const errorSignal = signal<TError | null>(null);
-
-  let subscription: Unsubscribable | null = null;
-
-  const reset = () => {
-    if (subscription) {
-      subscription.unsubscribe();
-      subscription = null;
-    }
-    statusSignal.set('idle');
-    dataSignal.set(undefined);
-    errorSignal.set(null);
-  };
-
-  const startSubscription = () => {
-    if (!subscriptionOptions.enabled) {
-      return;
-    }
-
-    reset();
-    statusSignal.set('connecting');
-
-    subscription = subscriptionOptions.subscribe({
-      onStarted: () => {
-        statusSignal.set('pending');
-        subscriptionOptions.onStarted?.();
-      },
-      onData: (data) => {
-        statusSignal.set('pending');
-        dataSignal.set(data as TOutput);
-        subscriptionOptions.onData?.(data);
-      },
-      onError: (error) => {
-        statusSignal.set('error');
-        errorSignal.set(error);
-        subscriptionOptions.onError?.(error);
-      },
-      onConnectionStateChange: (state) => {
-        subscriptionOptions.onConnectionStateChange?.(state);
-      },
-    });
-  };
-
-  // Start subscription when enabled
-  effect(() => {
-    if (subscriptionOptions.enabled) {
-      startSubscription();
-    } else {
-      reset();
-    }
-  });
-
-  // Clean up on destroy
-  destroyRef.onDestroy(() => {
-    reset();
-  });
-
-  // Return the subscription result as signals
   return {
-    get status() {
-      return statusSignal();
+    ...opts,
+    enabled,
+    subscribe: _subscribe,
+    queryKey,
+    trpc: createTRPCOptionsResult({ path }),
+  };
+};
+
+function trackResult<T extends object>(
+  result: T,
+  onTrackResult: (key: keyof T) => void,
+): T {
+  const trackedResult = new Proxy(result, {
+    get(target, prop) {
+      onTrackResult(prop as keyof T);
+      return target[prop as keyof T];
     },
-    get data() {
-      return dataSignal();
-    },
-    get error() {
-      return errorSignal();
-    },
-    reset,
-  } as TRPCSubscriptionResult<TOutput, TError>;
+  });
+
+  return trackedResult;
 }
