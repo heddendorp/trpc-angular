@@ -1,5 +1,12 @@
 # @heddendorp/tanstack-angular-query
 
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies [81712be]
+  - @heddendorp/trpc-link-angular@0.0.5
+
 ## 0.2.1
 
 ### Patch Changes
