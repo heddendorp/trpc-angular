@@ -75,7 +75,7 @@ jobs:
 
           # Publish the prerelease
           echo "🚀 Publishing prerelease..."
-          yarn changeset publish --tag ${{ inputs.prerelease_tag }}
+          CHANGESETS_PRERELEASE_TAG=${{ inputs.prerelease_tag }} node scripts/publish.js
 
           # Clean up temporary files (don't commit snapshot changes)
           echo "🧹 Cleaning up temporary files..."
