@@ -21,17 +21,19 @@ const appRouterWithTransformer = t.router({
   getDate: t.procedure.query(() => {
     return new Date('2023-01-01T00:00:00Z');
   }),
-  
+
   createPost: t.procedure
-    .input(z.object({ 
-      title: z.string(), 
-      createdAt: z.date() 
-    }))
+    .input(
+      z.object({
+        title: z.string(),
+        createdAt: z.date(),
+      }),
+    )
     .mutation(({ input }) => {
-      return { 
-        id: 1, 
-        title: input.title, 
-        createdAt: input.createdAt 
+      return {
+        id: 1,
+        title: input.title,
+        createdAt: input.createdAt,
       };
     }),
 });
@@ -62,11 +64,13 @@ describe('angularHttpLink with transformers', () => {
     // This test demonstrates that the main issue is fixed:
     // Users can now use transformer: superjson without TypeScript errors
     const client = createTRPCClient<AppRouterWithTransformer>({
-      links: [angularHttpLink({
-        url: 'http://localhost:3000/trpc',
-        httpClient,
-        transformer: superjson, // This should compile without TypeScript errors
-      })]
+      links: [
+        angularHttpLink({
+          url: 'http://localhost:3000/trpc',
+          httpClient,
+          transformer: superjson, // This should compile without TypeScript errors
+        }),
+      ],
     });
 
     expect(client).toBeDefined();
@@ -77,22 +81,26 @@ describe('angularHttpLink with transformers', () => {
   it('should handle transformer types correctly', () => {
     // Test that various transformer types work
     const client1 = createTRPCClient<AppRouterWithTransformer>({
-      links: [angularHttpLink({
-        url: 'http://localhost:3000/trpc',
-        httpClient,
-        transformer: superjson, // SuperJSON instance
-      })]
+      links: [
+        angularHttpLink({
+          url: 'http://localhost:3000/trpc',
+          httpClient,
+          transformer: superjson, // SuperJSON instance
+        }),
+      ],
     });
 
     const client2 = createTRPCClient<AppRouterWithTransformer>({
-      links: [angularHttpLink({
-        url: 'http://localhost:3000/trpc',
-        httpClient,
-        transformer: {
-          serialize: (data) => JSON.stringify(data),
-          deserialize: (data) => JSON.parse(data)
-        }, // Custom transformer
-      })]
+      links: [
+        angularHttpLink({
+          url: 'http://localhost:3000/trpc',
+          httpClient,
+          transformer: {
+            serialize: (data) => JSON.stringify(data),
+            deserialize: (data) => JSON.parse(data),
+          }, // Custom transformer
+        }),
+      ],
     });
 
     expect(client1).toBeDefined();

@@ -1,6 +1,6 @@
 /**
  * Example showing how to use SuperJSON transformer with Angular HTTP link
- * 
+ *
  * This demonstrates the fix for the TypeScript error:
  * "Type 'typeof SuperJSON' is not assignable to type 'true'"
  */
@@ -29,11 +29,13 @@ const appRouter = t.router({
     }),
 
   createPost: t.procedure
-    .input(z.object({
-      title: z.string(),
-      publishedAt: z.date(),
-      tags: z.array(z.string()),
-    }))
+    .input(
+      z.object({
+        title: z.string(),
+        publishedAt: z.date(),
+        tags: z.array(z.string()),
+      }),
+    )
     .mutation(({ input }) => {
       return {
         id: Math.random().toString(36),

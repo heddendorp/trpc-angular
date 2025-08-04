@@ -46,17 +46,20 @@ This repository uses Angular workspace with multiple projects:
 ### Initial Setup
 
 1. **Clone the repository**:
+
    ```bash
    git clone https://github.com/heddendorp/trpc-angular.git
    cd trpc-angular
    ```
 
 2. **Enable Corepack (for Yarn 4.x)**:
+
    ```bash
    corepack enable
    ```
 
 3. **Install dependencies**:
+
    ```bash
    yarn install
    ```
@@ -111,10 +114,12 @@ ng build tanstack-angular-query --watch
 ### Output Structure
 
 Built packages are output to:
+
 - `dist/trpc-link-angular/`
 - `dist/tanstack-angular-query/`
 
 Each directory contains:
+
 - `package.json` - Package manifest
 - `*.d.ts` - TypeScript declarations
 - `esm2022/` - ES2022 modules
@@ -143,15 +148,17 @@ ng test tanstack-angular-query
 To add proper tests:
 
 1. **Install testing dependencies**:
+
    ```bash
    yarn add -D @angular/testing jasmine karma karma-chrome-headless
    ```
 
 2. **Create test files**:
+
    ```bash
    # In projects/trpc-link-angular/src/
    touch angularHttpLink.spec.ts
-   
+
    # In projects/tanstack-angular-query/src/
    touch lib/trpc-query.spec.ts
    ```
@@ -163,15 +170,17 @@ To add proper tests:
 ### Link Packages Locally
 
 1. **Build packages**:
+
    ```bash
    yarn build
    ```
 
 2. **Link for local testing**:
+
    ```bash
    cd dist/trpc-link-angular
    yarn link
-   
+
    cd ../tanstack-angular-query
    yarn link
    ```
@@ -186,17 +195,20 @@ To add proper tests:
 ### Test with Example Application
 
 1. **Create test Angular application**:
+
    ```bash
    ng new test-app
    cd test-app
    ```
 
 2. **Install tRPC dependencies**:
+
    ```bash
    yarn add @trpc/client @trpc/server
    ```
 
 3. **Link local packages**:
+
    ```bash
    yarn link @heddendorp/trpc-link-angular
    yarn link @heddendorp/tanstack-angular-query
@@ -281,9 +293,11 @@ npm publish --access public
 2. **Create changeset** using `yarn changeset`
 3. **Create PR** and merge to main (changeset file included)
 4. **Changesets action** creates a "Version Packages" PR with:
-  - Updated version numbers
-  - Generated changelog entries
-  - Updated package.json files
+
+- Updated version numbers
+- Generated changelog entries
+- Updated package.json files
+
 5. **Merge version PR** to trigger automatic publishing to npm
 
 ### Prerelease Process
@@ -293,21 +307,24 @@ For testing changes before official releases, you can create prereleases using t
 #### Manual Prerelease (Recommended)
 
 1. **Navigate to GitHub Actions**:
-  - Go to the repository on GitHub
-  - Click on "Actions" tab
-  - Select "Prerelease" workflow
+
+- Go to the repository on GitHub
+- Click on "Actions" tab
+- Select "Prerelease" workflow
 
 2. **Trigger Prerelease**:
-  - Click "Run workflow"
-  - Select the branch you want to release from
-  - Choose a prerelease tag (e.g., `alpha`, `beta`, `rc`)
-  - Click "Run workflow"
+
+- Click "Run workflow"
+- Select the branch you want to release from
+- Choose a prerelease tag (e.g., `alpha`, `beta`, `rc`)
+- Click "Run workflow"
 
 3. **The workflow will**:
-  - Build and test the packages
-  - Create snapshot versions (e.g., `0.1.0-alpha-20240101123456`)
-  - Publish to npm with the prerelease tag
-  - Clean up temporary files
+
+- Build and test the packages
+- Create snapshot versions (e.g., `0.1.0-alpha-20240101123456`)
+- Publish to npm with the prerelease tag
+- Clean up temporary files
 
 #### Using Prerelease Packages
 
@@ -344,31 +361,34 @@ npm install @heddendorp/tanstack-angular-query@beta
 ### Common Issues
 
 1. **Build Failures**:
+
    ```bash
    # Clear node_modules and reinstall
    rm -rf node_modules
    yarn install
-   
+
    # Clear Angular cache
    ng cache clean
    ```
 
 2. **TypeScript Errors**:
-  - Check peer dependency versions
-  - Ensure TypeScript version compatibility
-  - Verify Angular version compatibility
+
+- Check peer dependency versions
+- Ensure TypeScript version compatibility
+- Verify Angular version compatibility
 
 3. **Dependency Conflicts**:
+
    ```bash
    # Check for version conflicts
    yarn why [package-name]
-   
+
    # Check workspace dependencies
    yarn workspaces list
-   
+
    # Check dependency graph
    yarn info @heddendorp/trpc-link-angular
-   
+
    # Verbose build for debugging
    ng build --verbose
    ```
@@ -404,12 +424,14 @@ Keep peer dependencies updated:
 ### Version Management
 
 1. **Update version numbers** in:
-  - `projects/trpc-link-angular/package.json`
-  - `projects/tanstack-angular-query/package.json`
+
+- `projects/trpc-link-angular/package.json`
+- `projects/tanstack-angular-query/package.json`
 
 2. **Update CHANGELOG.md** with new features and breaking changes
 
 3. **Create release branch**:
+
    ```bash
    git checkout -b release/v1.0.0
    ```
@@ -423,6 +445,7 @@ Keep peer dependencies updated:
 ### Semantic Versioning
 
 Follow semantic versioning:
+
 - **Major**: Breaking changes
 - **Minor**: New features (backward compatible)
 - **Patch**: Bug fixes (backward compatible)
@@ -430,6 +453,7 @@ Follow semantic versioning:
 ### Breaking Changes
 
 When introducing breaking changes:
+
 1. Update major version number
 2. Document migration guide
 3. Update examples and documentation
@@ -494,6 +518,7 @@ When introducing breaking changes:
 ## Support
 
 For issues and questions:
+
 - Check existing GitHub issues
 - Create new issue with reproduction steps
 - Use discussion for general questions

@@ -31,7 +31,7 @@ export interface TRPCClientFactory<TRouter extends AnyTRPCRouter> {
  * Creates a factory function that can be used with provideTRPC
  */
 export function createTRPCClientFactory<TRouter extends AnyTRPCRouter>(
-  factory: () => TRPCClient<TRouter>
+  factory: () => TRPCClient<TRouter>,
 ): TRPCClientFactory<TRouter> {
   const factoryFn = factory as TRPCClientFactory<TRouter>;
   factoryFn.__isTRPCClientFactory = true;
@@ -52,8 +52,9 @@ export function provideTRPC<TRouter extends AnyTRPCRouter>(
     {
       provide: TRPC_CLIENT,
       useFactory: () => {
-        const isFactory = (clientOrFactory as any).__isTRPCClientFactory === true;
-        
+        const isFactory =
+          (clientOrFactory as any).__isTRPCClientFactory === true;
+
         if (isFactory) {
           return (clientOrFactory as TRPCClientFactory<TRouter>)();
         }
@@ -64,7 +65,9 @@ export function provideTRPC<TRouter extends AnyTRPCRouter>(
       provide: TRPC_OPTIONS_PROXY,
       useFactory: (client: TRPCClient<TRouter>) => {
         if (!client) {
-          throw new Error('TRPCClient is undefined. Check your provideTRPC configuration.');
+          throw new Error(
+            'TRPCClient is undefined. Check your provideTRPC configuration.',
+          );
         }
         const qc = queryClient ?? inject(QueryClientService);
         return createTRPCOptionsProxy({

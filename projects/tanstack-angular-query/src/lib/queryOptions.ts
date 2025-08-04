@@ -31,69 +31,69 @@ type ReservedOptions = 'queryKey' | 'queryFn' | 'queryHashFn' | 'queryHash';
 
 interface UndefinedTRPCQueryOptionsIn<TQueryFnData, TData, TError>
   extends DistributiveOmit<
-    UndefinedInitialDataOptions<
-      coerceAsyncIterableToArray<TQueryFnData>,
-      TError,
-      coerceAsyncIterableToArray<TData>,
-      TRPCQueryKey
+      UndefinedInitialDataOptions<
+        coerceAsyncIterableToArray<TQueryFnData>,
+        TError,
+        coerceAsyncIterableToArray<TData>,
+        TRPCQueryKey
+      >,
+      ReservedOptions
     >,
-    ReservedOptions
-  >,
     TRPCQueryBaseOptions {}
 
 interface UndefinedTRPCQueryOptionsOut<TQueryFnData, TOutput, TError>
   extends UndefinedInitialDataOptions<
-    coerceAsyncIterableToArray<TQueryFnData>,
-    TError,
-    coerceAsyncIterableToArray<TOutput>,
-    TRPCQueryKey
-  >,
+      coerceAsyncIterableToArray<TQueryFnData>,
+      TError,
+      coerceAsyncIterableToArray<TOutput>,
+      TRPCQueryKey
+    >,
     TRPCQueryOptionsResult {
   queryKey: DataTag<TRPCQueryKey, coerceAsyncIterableToArray<TOutput>, TError>;
 }
 
 interface DefinedTRPCQueryOptionsIn<TQueryFnData, TData, TError>
   extends DistributiveOmit<
-    DefinedInitialDataOptions<
-      coerceAsyncIterableToArray<NoInfer<TQueryFnData>>,
-      TError,
-      coerceAsyncIterableToArray<TData>,
-      TRPCQueryKey
+      DefinedInitialDataOptions<
+        coerceAsyncIterableToArray<NoInfer<TQueryFnData>>,
+        TError,
+        coerceAsyncIterableToArray<TData>,
+        TRPCQueryKey
+      >,
+      ReservedOptions
     >,
-    ReservedOptions
-  >,
     TRPCQueryBaseOptions {}
 
 interface DefinedTRPCQueryOptionsOut<TQueryFnData, TData, TError>
   extends DefinedInitialDataOptions<
-    coerceAsyncIterableToArray<TQueryFnData>,
-    TError,
-    coerceAsyncIterableToArray<TData>,
-    TRPCQueryKey
-  >,
+      coerceAsyncIterableToArray<TQueryFnData>,
+      TError,
+      coerceAsyncIterableToArray<TData>,
+      TRPCQueryKey
+    >,
     TRPCQueryOptionsResult {
   queryKey: DataTag<TRPCQueryKey, coerceAsyncIterableToArray<TData>, TError>;
 }
 
 interface UnusedSkipTokenTRPCQueryOptionsIn<TQueryFnData, TData, TError>
   extends DistributiveOmit<
-    UnusedSkipTokenOptions<
-      coerceAsyncIterableToArray<TQueryFnData>,
-      TError,
-      coerceAsyncIterableToArray<TData>,
-      TRPCQueryKey
+      UnusedSkipTokenOptions<
+        coerceAsyncIterableToArray<TQueryFnData>,
+        TError,
+        coerceAsyncIterableToArray<TData>,
+        TRPCQueryKey
+      >,
+      ReservedOptions
     >,
-    ReservedOptions
-  >,
     TRPCQueryBaseOptions {}
 
 interface UnusedSkipTokenTRPCQueryOptionsOut<TQueryFnData, TOutput, TError>
   extends UnusedSkipTokenOptions<
-    coerceAsyncIterableToArray<TQueryFnData>,
-    TError,
-    coerceAsyncIterableToArray<TOutput>,
-    TRPCQueryKey
-  >,
+      coerceAsyncIterableToArray<TQueryFnData>,
+      TError,
+      coerceAsyncIterableToArray<TOutput>,
+      TRPCQueryKey
+    >,
     TRPCQueryOptionsResult {
   queryKey: DataTag<TRPCQueryKey, coerceAsyncIterableToArray<TOutput>, TError>;
 }

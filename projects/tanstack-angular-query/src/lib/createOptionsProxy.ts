@@ -1,4 +1,8 @@
-import type { DataTag, QueryClient, QueryFilters } from '@tanstack/angular-query-experimental';
+import type {
+  DataTag,
+  QueryClient,
+  QueryFilters,
+} from '@tanstack/angular-query-experimental';
 import type {
   TRPCClient,
   TRPCClientErrorLike,
@@ -78,14 +82,14 @@ interface TypeHelper<TDef extends ResolverDef> {
 
 export type inferInput<
   TProcedure extends
-      | DecorateInfiniteQueryProcedure<any>
+    | DecorateInfiniteQueryProcedure<any>
     | DecorateQueryProcedure<any>
     | DecorateMutationProcedure<any>,
 > = TProcedure['~types']['input'];
 
 export type inferOutput<
   TProcedure extends
-      | DecorateInfiniteQueryProcedure<any>
+    | DecorateInfiniteQueryProcedure<any>
     | DecorateQueryProcedure<any>
     | DecorateMutationProcedure<any>,
 > = TProcedure['~types']['output'];
@@ -237,9 +241,9 @@ export type DecorateProcedure<
   TDef extends ResolverDef,
 > = TType extends 'query'
   ? DecorateQueryProcedure<TDef> &
-  (TDef['input'] extends OptionalCursorInput
-    ? DecorateInfiniteQueryProcedure<TDef>
-    : Record<string, never>)
+      (TDef['input'] extends OptionalCursorInput
+        ? DecorateInfiniteQueryProcedure<TDef>
+        : Record<string, never>)
   : TType extends 'mutation'
     ? DecorateMutationProcedure<TDef>
     : TType extends 'subscription'
@@ -258,14 +262,14 @@ export type DecoratedRouterRecord<
       ? DecoratedRouterRecord<TRoot, $Value> & DecorateRouterKeyable
       : $Value extends AnyTRPCProcedure
         ? DecorateProcedure<
-          $Value['_def']['type'],
-          {
-            input: inferProcedureInput<$Value>;
-            output: inferTransformedProcedureOutput<TRoot, $Value>;
-            transformer: TRoot['transformer'];
-            errorShape: TRoot['errorShape'];
-          }
-        >
+            $Value['_def']['type'],
+            {
+              input: inferProcedureInput<$Value>;
+              output: inferTransformedProcedureOutput<TRoot, $Value>;
+              transformer: TRoot['transformer'];
+              errorShape: TRoot['errorShape'];
+            }
+          >
         : never
     : never;
 };
@@ -275,7 +279,7 @@ export type TRPCOptionsProxy<TRouter extends AnyTRPCRouter> =
     TRouter['_def']['_config']['$types'],
     TRouter['_def']['record']
   > &
-  DecorateRouterKeyable;
+    DecorateRouterKeyable;
 
 export interface TRPCOptionsProxyOptionsBase {
   queryClient: QueryClient | (() => QueryClient);
@@ -301,9 +305,9 @@ export interface TRPCOptionsProxyOptionsExternal<
 
 export type TRPCOptionsProxyOptions<TRouter extends AnyTRPCRouter> =
   TRPCOptionsProxyOptionsBase &
-  (
-    | TRPCOptionsProxyOptionsInternal<TRouter>
-    | TRPCOptionsProxyOptionsExternal<TRouter>
+    (
+      | TRPCOptionsProxyOptionsInternal<TRouter>
+      | TRPCOptionsProxyOptionsExternal<TRouter>
     );
 
 type UtilsMethods =

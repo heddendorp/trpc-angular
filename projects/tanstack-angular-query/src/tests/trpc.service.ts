@@ -3,7 +3,7 @@ import { createTRPCClient, httpBatchLink } from '@trpc/client';
 import { AppRouter } from './example-server';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TrpcService {
   client = createTRPCClient<AppRouter>({

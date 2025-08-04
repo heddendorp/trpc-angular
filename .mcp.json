@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "trpcDocs": {
+      "command": "npx",
+      "args": ["mcp-remote", "https://gitmcp.io/trpc/trpc"]
+    }
+  }
+}

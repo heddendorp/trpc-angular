@@ -58,7 +58,9 @@ type TransformerOptionNo = {
 
 export type TransformerOptions<
   TRoot extends Pick<AnyClientTypes, 'transformer'>,
-> = TRoot['transformer'] extends true ? TransformerOptionYes : TransformerOptionNo;
+> = TRoot['transformer'] extends true
+  ? TransformerOptionYes
+  : TransformerOptionNo;
 
 // Copy of getTransformer function from client package
 export function getTransformer(
@@ -83,7 +85,10 @@ export function getTransformer(
   }
 
   // If it's a DataTransformer (has serialize and deserialize properties)
-  const singleTransformer = transformer as { serialize: (v: any) => any; deserialize: (v: any) => any };
+  const singleTransformer = transformer as {
+    serialize: (v: any) => any;
+    deserialize: (v: any) => any;
+  };
   return {
     input: {
       serialize: singleTransformer.serialize,
@@ -101,7 +106,9 @@ export function resolveHTTPLinkOptions(
 ): ResolvedHTTPLinkOptions {
   return {
     url: opts.url.toString(),
-    transformer: getTransformer(opts.transformer as DataTransformerOptions | undefined),
+    transformer: getTransformer(
+      opts.transformer as DataTransformerOptions | undefined,
+    ),
     methodOverride: opts.methodOverride,
   };
 }

@@ -13,6 +13,7 @@ The new factory pattern allows you to create the tRPC client using dependency in
 ## Basic Usage
 
 ### Before (Old Way)
+
 ```typescript
 // This doesn't work with angularHttpLink because you can't inject HttpClient
 const client = createTRPCClient<AppRouter>({
@@ -32,32 +33,35 @@ export const appConfig: ApplicationConfig = {
 ```
 
 ### After (New Way)
+
 ```typescript
 // app.config.ts
-import { ApplicationConfig } from '@angular/core';
-import { provideHttpClient } from '@angular/common/http';
-import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
-import { provideTRPC, createTRPCClientFactory } from '@heddendorp/tanstack-angular-query';
-import { createTRPCClient } from '@trpc/client';
-import { angularHttpLink } from '@heddendorp/trpc-link-angular';
-import { inject } from '@angular/core';
-import type { AppRouter } from './server/router';
+import { ApplicationConfig } from "@angular/core";
+import { provideHttpClient } from "@angular/common/http";
+import { provideTanStackQuery, QueryClient } from "@tanstack/angular-query-experimental";
+import { provideTRPC, createTRPCClientFactory } from "@heddendorp/tanstack-angular-query";
+import { createTRPCClient } from "@trpc/client";
+import { angularHttpLink } from "@heddendorp/trpc-link-angular";
+import { inject } from "@angular/core";
+import type { AppRouter } from "./server/router";
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideHttpClient(),
     provideTanStackQuery(new QueryClient()),
-    provideTRPC(createTRPCClientFactory(() => {
-      const httpClient = inject(HttpClient);
-      return createTRPCClient<AppRouter>({
-        links: [
-          angularHttpLink({
-            url: 'http://localhost:3000/trpc',
-            httpClient,
-          }),
-        ],
-      });
-    })),
+    provideTRPC(
+      createTRPCClientFactory(() => {
+        const httpClient = inject(HttpClient);
+        return createTRPCClient<AppRouter>({
+          links: [
+            angularHttpLink({
+              url: "http://localhost:3000/trpc",
+              httpClient,
+            }),
+          ],
+        });
+      }),
+    ),
   ],
 };
 ```
@@ -65,76 +69,85 @@ export const appConfig: ApplicationConfig = {
 ## Advanced Examples
 
 ### With Authentication Headers
+
 ```typescript
-provideTRPC(createTRPCClientFactory(() => {
-  const httpClient = inject(HttpClient);
-  return createTRPCClient<AppRouter>({
-    links: [
-      angularHttpLink({
-        url: 'http://localhost:3000/trpc',
-        httpClient,
-        headers: () => ({
-          authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+provideTRPC(
+  createTRPCClientFactory(() => {
+    const httpClient = inject(HttpClient);
+    return createTRPCClient<AppRouter>({
+      links: [
+        angularHttpLink({
+          url: "http://localhost:3000/trpc",
+          httpClient,
+          headers: () => ({
+            authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+          }),
         }),
-      }),
-    ],
-  });
-}))
+      ],
+    });
+  }),
+);
 ```
 
 ### With Custom Services
+
 ```typescript
 // auth.service.ts
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class AuthService {
   getToken(): string | null {
-    return localStorage.getItem('token');
+    return localStorage.getItem("token");
   }
 }
 
 // app.config.ts
-provideTRPC(createTRPCClientFactory(() => {
-  const httpClient = inject(HttpClient);
-  const authService = inject(AuthService);
-  
-  return createTRPCClient<AppRouter>({
-    links: [
-      angularHttpLink({
-        url: 'http://localhost:3000/trpc',
-        httpClient,
-        headers: () => {
-          const token = authService.getToken();
-          return token ? { authorization: `Bearer ${token}` } : {};
-        },
-      }),
-    ],
-  });
-}))
+provideTRPC(
+  createTRPCClientFactory(() => {
+    const httpClient = inject(HttpClient);
+    const authService = inject(AuthService);
+
+    return createTRPCClient<AppRouter>({
+      links: [
+        angularHttpLink({
+          url: "http://localhost:3000/trpc",
+          httpClient,
+          headers: () => {
+            const token = authService.getToken();
+            return token ? { authorization: `Bearer ${token}` } : {};
+          },
+        }),
+      ],
+    });
+  }),
+);
 ```
 
 ### With Environment Configuration
+
 ```typescript
 // environments/environment.ts
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3000/trpc',
+  apiUrl: "http://localhost:3000/trpc",
 };
 
 // app.config.ts
-provideTRPC(createTRPCClientFactory(() => {
-  const httpClient = inject(HttpClient);
-  
-  return createTRPCClient<AppRouter>({
-    links: [
-      angularHttpLink({
-        url: environment.apiUrl,
-        httpClient,
-      }),
-    ],
-  });
-}))
+provideTRPC(
+  createTRPCClientFactory(() => {
+    const httpClient = inject(HttpClient);
+
+    return createTRPCClient<AppRouter>({
+      links: [
+        angularHttpLink({
+          url: environment.apiUrl,
+          httpClient,
+        }),
+      ],
+    });
+  }),
+);
 ```
 
 ## Component Usage
@@ -143,13 +156,13 @@ Once configured, components can use the tRPC client as before:
 
 ```typescript
 // user-profile.component.ts
-import { Component } from '@angular/core';
-import { injectTRPC } from '@heddendorp/tanstack-angular-query';
-import { injectQuery } from '@tanstack/angular-query-experimental';
-import type { AppRouter } from '../server/router';
+import { Component } from "@angular/core";
+import { injectTRPC } from "@heddendorp/tanstack-angular-query";
+import { injectQuery } from "@tanstack/angular-query-experimental";
+import type { AppRouter } from "../server/router";
 
 @Component({
-  selector: 'app-user-profile',
+  selector: "app-user-profile",
   template: `
     <div class="user-profile">
       @if (userQuery.isLoading()) {
@@ -167,10 +180,8 @@ import type { AppRouter } from '../server/router';
 })
 export class UserProfileComponent {
   private trpc = injectTRPC<AppRouter>();
-  
-  userQuery = injectQuery(() => 
-    this.trpc.user.get.queryOptions({ id: 1 })
-  );
+
+  userQuery = injectQuery(() => this.trpc.user.get.queryOptions({ id: 1 }));
 }
 ```
 
@@ -183,13 +194,13 @@ The old approach still works for pre-created clients:
 const client = createTRPCClient<AppRouter>({
   links: [
     httpBatchLink({
-      url: 'http://localhost:3000/trpc',
+      url: "http://localhost:3000/trpc",
     }),
   ],
 });
 
 // Use directly
-provideTRPC(client)
+provideTRPC(client);
 ```
 
 ## Key Benefits
@@ -211,17 +222,19 @@ beforeEach(() => {
     providers: [
       provideHttpClient(),
       provideTanStackQuery(new QueryClient()),
-      provideTRPC(createTRPCClientFactory(() => {
-        const httpClient = inject(HttpClient);
-        return createTRPCClient<AppRouter>({
-          links: [
-            angularHttpLink({
-              url: 'http://localhost:3000/trpc',
-              httpClient,
-            }),
-          ],
-        });
-      })),
+      provideTRPC(
+        createTRPCClientFactory(() => {
+          const httpClient = inject(HttpClient);
+          return createTRPCClient<AppRouter>({
+            links: [
+              angularHttpLink({
+                url: "http://localhost:3000/trpc",
+                httpClient,
+              }),
+            ],
+          });
+        }),
+      ),
     ],
   });
 });

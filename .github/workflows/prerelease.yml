@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       prerelease_tag:
-        description: 'Prerelease tag (e.g., alpha, beta, rc)'
+        description: "Prerelease tag (e.g., alpha, beta, rc)"
         required: false
-        default: 'alpha'
+        default: "alpha"
         type: string
 
 jobs:
@@ -26,8 +26,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
 
       - name: Enable Corepack
         run: corepack enable

@@ -1,4 +1,9 @@
-import { HttpClient, HttpHeaders, HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpHeaders,
+  HttpErrorResponse,
+  HttpResponse,
+} from '@angular/common/http';
 import { Observable, Subscription } from 'rxjs';
 import { observable } from '@trpc/server/observable';
 import type {
@@ -38,9 +43,41 @@ const METHOD = {
 } as const;
 
 /**
- * Angular HttpClient requester function
+ * Polyfill for DOMException with AbortError name
  */
-function angularHttpRequester(
+class AbortError extends Error {
+  constructor() {
+    const name = 'AbortError';
+    super(name);
+    this.name = name;
+    this.message = name;
+  }
+}
+
+/**
+ * Polyfill for `signal.throwIfAborted()`
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/throwIfAborted
+ */
+const throwIfAborted = (signal?: AbortSignal) => {
+  if (!signal?.aborted) {
+    return;
+  }
+  // If available, use the native implementation
+  signal.throwIfAborted?.();
+
+  // If we have `DOMException`, use it
+  if (typeof DOMException !== 'undefined') {
+    throw new DOMException('AbortError', 'AbortError');
+  }
+
+  // Otherwise, use our own implementation
+  throw new AbortError();
+};
+
+/**
+ * Angular HttpClient-based HTTP requester that follows tRPC's error handling patterns
+ */
+async function angularHttpRequester(
   httpClient: HttpClient,
   opts: {
     url: string;
@@ -53,67 +90,68 @@ function angularHttpRequester(
     methodOverride?: 'POST';
   },
 ): Promise<HTTPResult> {
-  return new Promise((resolve, reject) => {
-    const method = opts.methodOverride ?? METHOD[opts.type];
+  throwIfAborted(opts.signal);
 
-    // Build the URL with query parameters for GET requests
-    const urlWithParams = getUrl({
-      ...opts,
-      input: opts.input || undefined,
-      transformer: opts.transformer,
-      signal: opts.signal ?? null,
-    });
+  const method = opts.methodOverride ?? METHOD[opts.type];
 
-    // Convert headers to Angular HttpHeaders
-    let angularHeaders = new HttpHeaders();
-    if (opts.headers) {
-      const headerObj = opts.headers as Record<string, string | string[]>;
-      for (const [key, value] of Object.entries(headerObj)) {
-        if (typeof value === 'string') {
-          angularHeaders = angularHeaders.set(key, value);
-        } else if (Array.isArray(value)) {
-          angularHeaders = angularHeaders.set(key, value.join(', '));
-        }
+  // Build the URL with query parameters for GET requests
+  const urlWithParams = getUrl({
+    ...opts,
+    input: opts.input || undefined,
+    transformer: opts.transformer,
+    signal: opts.signal ?? null,
+  });
+
+  // Convert headers to Angular HttpHeaders
+  let angularHeaders = new HttpHeaders();
+  if (opts.headers) {
+    const headerObj = opts.headers as Record<string, string | string[]>;
+    for (const [key, value] of Object.entries(headerObj)) {
+      if (typeof value === 'string') {
+        angularHeaders = angularHeaders.set(key, value);
+      } else if (Array.isArray(value)) {
+        angularHeaders = angularHeaders.set(key, value.join(', '));
       }
     }
+  }
 
-    // Set content type for POST/PATCH requests
-    if (method === 'POST' || method === 'PATCH') {
-      angularHeaders = angularHeaders.set('Content-Type', 'application/json');
-    }
+  // Set content type for POST/PATCH requests
+  if (method === 'POST' || method === 'PATCH') {
+    angularHeaders = angularHeaders.set('Content-Type', 'application/json');
+  }
 
-    const requestOptions = {
-      headers: angularHeaders,
-      observe: 'response' as const,
-      responseType: 'json' as const,
-    };
+  const requestOptions = {
+    headers: angularHeaders,
+    observe: 'response' as const,
+    responseType: 'json' as const,
+  };
 
-    let request$: Observable<HttpResponse<any>>;
+  let request$: Observable<HttpResponse<any>>;
 
-    if (method === 'GET') {
-      request$ = httpClient.get(urlWithParams, requestOptions);
-    } else if (method === 'POST') {
-      let body: string | undefined;
-      if (opts.type !== 'query' || opts.methodOverride === 'POST') {
-        const input = getInput({
-          input: opts.input || undefined,
-          transformer: opts.transformer,
-        });
-        body = input !== undefined ? JSON.stringify(input) : undefined;
-      }
-      request$ = httpClient.post(urlWithParams, body, requestOptions);
-    } else if (method === 'PATCH') {
+  if (method === 'GET') {
+    request$ = httpClient.get(urlWithParams, requestOptions);
+  } else if (method === 'POST') {
+    let body: string | undefined;
+    if (opts.type !== 'query' || opts.methodOverride === 'POST') {
       const input = getInput({
         input: opts.input || undefined,
         transformer: opts.transformer,
       });
-      const body = input !== undefined ? JSON.stringify(input) : undefined;
-      request$ = httpClient.patch(urlWithParams, body, requestOptions);
-    } else {
-      reject(new Error(`Unsupported HTTP method: ${method}`));
-      return;
+      body = input !== undefined ? JSON.stringify(input) : undefined;
     }
+    request$ = httpClient.post(urlWithParams, body, requestOptions);
+  } else if (method === 'PATCH') {
+    const input = getInput({
+      input: opts.input || undefined,
+      transformer: opts.transformer,
+    });
+    const body = input !== undefined ? JSON.stringify(input) : undefined;
+    request$ = httpClient.patch(urlWithParams, body, requestOptions);
+  } else {
+    throw new Error(`Unsupported HTTP method: ${method}`);
+  }
 
+  return new Promise((resolve, reject) => {
     let subscription: Subscription | undefined;
     let aborted = false;
 
@@ -124,11 +162,12 @@ function angularHttpRequester(
         if (subscription) {
           subscription.unsubscribe();
         }
-        reject(new Error('Request aborted'));
+        // Use the proper abort error
+        throwIfAborted(opts.signal);
       };
 
       if (opts.signal.aborted) {
-        onAbort();
+        throwIfAborted(opts.signal);
         return;
       }
 
@@ -139,19 +178,22 @@ function angularHttpRequester(
       next: (response: HttpResponse<any>) => {
         if (aborted) return;
 
+        // Build meta info similar to official tRPC httpUtils
+        const meta = {
+          response: {
+            status: response.status,
+            statusText: response.statusText,
+            headers: response.headers,
+            url: response.url ?? undefined,
+            json: async () => response.body,
+            text: async () => JSON.stringify(response.body),
+          },
+          responseJSON: response.body,
+        };
+
         const httpResult: HTTPResult = {
           json: response.body as TRPCResponse,
-          meta: {
-            response: {
-              status: response.status,
-              statusText: response.statusText,
-              headers: response.headers,
-              url: response.url ?? undefined,
-              json: async () => response.body,
-              text: async () => JSON.stringify(response.body),
-            } as any,
-            responseJSON: response.body,
-          },
+          meta,
         };
 
         resolve(httpResult);
@@ -159,43 +201,40 @@ function angularHttpRequester(
       error: (error: any) => {
         if (aborted) return;
 
+        // Handle Angular HttpErrorResponse similar to fetch errors
         if (error instanceof HttpErrorResponse) {
-          const httpResult: HTTPResult = {
-            json: {
-              error: {
-                message: error.message || 'HTTP Error',
-                code: error.status,
-                data: {
-                  code:
-                    error.status === 400
-                      ? 'BAD_REQUEST'
-                      : error.status === 401
-                        ? 'UNAUTHORIZED'
-                        : error.status === 403
-                          ? 'FORBIDDEN'
-                          : error.status === 404
-                            ? 'NOT_FOUND'
-                            : error.status === 500
-                              ? 'INTERNAL_SERVER_ERROR'
-                              : 'UNKNOWN_ERROR',
-                  httpStatus: error.status,
-                },
+          const meta = {
+            response: {
+              status: error.status,
+              statusText: error.statusText || 'Unknown Error',
+              headers: error.headers,
+              url: error.url ?? undefined,
+              json: async () => error.error,
+              text: async () => JSON.stringify(error.error),
+            },
+            responseJSON: error.error,
+          };
+
+          // Return the actual error response body if available, otherwise create error structure
+          const responseBody = error.error || {
+            error: {
+              message: error.message || 'HTTP Error',
+              code: -1,
+              data: {
+                code: 'HTTP_ERROR',
+                httpStatus: error.status,
               },
-            } as any,
-            meta: {
-              response: {
-                status: error.status,
-                statusText: error.statusText || 'Unknown Error',
-                headers: error.headers,
-                url: error.url ?? undefined,
-                json: async () => error.error,
-                text: async () => JSON.stringify(error.error),
-              } as any,
-              responseJSON: error.error,
             },
           };
+
+          const httpResult: HTTPResult = {
+            json: responseBody as TRPCResponse,
+            meta,
+          };
+
           resolve(httpResult);
         } else {
+          // For non-HTTP errors (network issues, etc.), reject directly
           reject(error);
         }
       },

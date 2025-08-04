@@ -10,7 +10,7 @@ describe('Record type inference tests', () => {
         return ctx.user;
       }),
     });
-    
+
     // Test 2: Using object literal type
     const t2 = initTRPC.context<{ user?: { [key: string]: any } }>().create();
     const router2 = t2.router({
@@ -18,47 +18,51 @@ describe('Record type inference tests', () => {
         return ctx.user;
       }),
     });
-    
+
     // Test 3: Using a concrete type with index signature - this should work
-    const t3 = initTRPC.context<{ user?: { name: string; [key: string]: any } }>().create();
+    const t3 = initTRPC
+      .context<{ user?: { name: string; [key: string]: any } }>()
+      .create();
     const router3 = t3.router({
       getUser: t3.procedure.query(({ ctx }) => {
         return ctx.user;
       }),
     });
-    
-    // Test 4: Using unknown type 
+
+    // Test 4: Using unknown type
     const t4 = initTRPC.context<{ user?: unknown }>().create();
     const router4 = t4.router({
       getUser: t4.procedure.query(({ ctx }) => {
         return ctx.user;
       }),
     });
-    
+
     // The fact that this compiles means the types are working
     expect(router1).toBeDefined();
     expect(router2).toBeDefined();
     expect(router3).toBeDefined();
     expect(router4).toBeDefined();
   });
-  
+
   it('should demonstrate that mixed index signatures with specific properties work', () => {
     // This demonstrates the fix - using specific properties with index signatures
-    const t = initTRPC.context<{ 
-      user?: { 
-        id: string; 
-        name: string; 
-        email: string; 
-        [key: string]: any 
-      } 
-    }>().create();
-    
+    const t = initTRPC
+      .context<{
+        user?: {
+          id: string;
+          name: string;
+          email: string;
+          [key: string]: any;
+        };
+      }>()
+      .create();
+
     const router = t.router({
       getUser: t.procedure.query(({ ctx }) => {
         return ctx.user;
       }),
     });
-    
+
     expect(router).toBeDefined();
   });
 });

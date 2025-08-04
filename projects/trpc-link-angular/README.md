@@ -24,22 +24,22 @@ This package requires the following peer dependencies:
 ### Basic Usage
 
 ```typescript
-import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
-import { createTRPCClient } from '@trpc/client';
-import { angularHttpLink } from '@heddendorp/trpc-link-angular';
-import type { AppRouter } from '../server/router';
+import { HttpClient } from "@angular/common/http";
+import { Injectable, inject } from "@angular/core";
+import { createTRPCClient } from "@trpc/client";
+import { angularHttpLink } from "@heddendorp/trpc-link-angular";
+import type { AppRouter } from "../server/router";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class TrpcService {
   private httpClient = inject(HttpClient);
-  
+
   client = createTRPCClient<AppRouter>({
     links: [
       angularHttpLink({
-        url: 'http://localhost:3000/trpc',
+        url: "http://localhost:3000/trpc",
         httpClient: this.httpClient,
       }),
     ],
@@ -50,23 +50,23 @@ export class TrpcService {
 ### With Data Transformers (e.g., SuperJSON)
 
 ```typescript
-import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
-import { createTRPCClient } from '@trpc/client';
-import { angularHttpLink } from '@heddendorp/trpc-link-angular';
-import superjson from 'superjson';
-import type { AppRouter } from '../server/router';
+import { HttpClient } from "@angular/common/http";
+import { Injectable, inject } from "@angular/core";
+import { createTRPCClient } from "@trpc/client";
+import { angularHttpLink } from "@heddendorp/trpc-link-angular";
+import superjson from "superjson";
+import type { AppRouter } from "../server/router";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class TrpcWithTransformerService {
   private httpClient = inject(HttpClient);
-  
+
   client = createTRPCClient<AppRouter>({
     links: [
       angularHttpLink({
-        url: 'http://localhost:3000/trpc',
+        url: "http://localhost:3000/trpc",
         httpClient: this.httpClient,
         transformer: superjson, // SuperJSON transformer for Date objects, etc.
       }),
@@ -78,22 +78,22 @@ export class TrpcWithTransformerService {
 ### With Custom Transformer
 
 ```typescript
-import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
-import { createTRPCClient } from '@trpc/client';
-import { angularHttpLink } from '@heddendorp/trpc-link-angular';
-import type { AppRouter } from '../server/router';
+import { HttpClient } from "@angular/common/http";
+import { Injectable, inject } from "@angular/core";
+import { createTRPCClient } from "@trpc/client";
+import { angularHttpLink } from "@heddendorp/trpc-link-angular";
+import type { AppRouter } from "../server/router";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class TrpcWithCustomTransformerService {
   private httpClient = inject(HttpClient);
-  
+
   client = createTRPCClient<AppRouter>({
     links: [
       angularHttpLink({
-        url: 'http://localhost:3000/trpc',
+        url: "http://localhost:3000/trpc",
         httpClient: this.httpClient,
         transformer: {
           serialize: (data) => JSON.stringify(data),
@@ -108,25 +108,25 @@ export class TrpcWithCustomTransformerService {
 ### With Authentication
 
 ```typescript
-import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
-import { createTRPCClient } from '@trpc/client';
-import { angularHttpLink } from '@heddendorp/trpc-link-angular';
-import type { AppRouter } from '../server/router';
+import { HttpClient } from "@angular/common/http";
+import { Injectable, inject } from "@angular/core";
+import { createTRPCClient } from "@trpc/client";
+import { angularHttpLink } from "@heddendorp/trpc-link-angular";
+import type { AppRouter } from "../server/router";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class TrpcWithAuthService {
   private httpClient = inject(HttpClient);
-  
+
   client = createTRPCClient<AppRouter>({
     links: [
       angularHttpLink({
-        url: 'http://localhost:3000/trpc',
+        url: "http://localhost:3000/trpc",
         httpClient: this.httpClient,
         headers: () => ({
-          authorization: `Bearer ${localStorage.getItem('token')}`,
+          authorization: `Bearer ${localStorage.getItem("token")}`,
         }),
       }),
     ],
@@ -137,25 +137,25 @@ export class TrpcWithAuthService {
 ### Error Handling
 
 ```typescript
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
-import { createTRPCClient } from '@trpc/client';
-import { angularHttpLink } from '@heddendorp/trpc-link-angular';
-import type { AppRouter } from '../server/router';
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { Injectable, inject } from "@angular/core";
+import { createTRPCClient } from "@trpc/client";
+import { angularHttpLink } from "@heddendorp/trpc-link-angular";
+import type { AppRouter } from "../server/router";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class TrpcWithErrorHandlingService {
   private httpClient = inject(HttpClient);
-  
+
   client = createTRPCClient<AppRouter>({
     links: [
       angularHttpLink({
-        url: 'http://localhost:3000/trpc',
+        url: "http://localhost:3000/trpc",
         httpClient: this.httpClient,
         onError: (error: HttpErrorResponse) => {
-          console.error('tRPC Error:', error);
+          console.error("tRPC Error:", error);
           // Handle error globally
         },
       }),
@@ -193,23 +193,23 @@ If you're migrating from the standard tRPC httpLink:
 
 ```typescript
 // Before
-import { httpLink } from '@trpc/client';
+import { httpLink } from "@trpc/client";
 
 const client = createTRPCClient<AppRouter>({
   links: [
     httpLink({
-      url: 'http://localhost:3000/trpc',
+      url: "http://localhost:3000/trpc",
     }),
   ],
 });
 
 // After
-import { angularHttpLink } from '@heddendorp/trpc-link-angular';
+import { angularHttpLink } from "@heddendorp/trpc-link-angular";
 
 const client = createTRPCClient<AppRouter>({
   links: [
     angularHttpLink({
-      url: 'http://localhost:3000/trpc',
+      url: "http://localhost:3000/trpc",
       httpClient: this.httpClient,
     }),
   ],

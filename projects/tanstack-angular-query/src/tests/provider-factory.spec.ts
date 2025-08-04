@@ -2,13 +2,17 @@ import { TestBed } from '@angular/core/testing';
 import { describe, expect, it, beforeEach } from 'vitest';
 import { Component, inject, InjectionToken } from '@angular/core';
 import { provideZonelessChangeDetection } from '@angular/core';
-import { 
-  QueryClient, 
-  provideTanStackQuery, 
-  injectQuery, 
+import {
+  QueryClient,
+  provideTanStackQuery,
+  injectQuery,
   injectMutation,
 } from '@tanstack/angular-query-experimental';
-import { injectTRPC, provideTRPC, createTRPCClientFactory } from '../public-api';
+import {
+  injectTRPC,
+  provideTRPC,
+  createTRPCClientFactory,
+} from '../public-api';
 import { createTRPCClient, httpBatchLink } from '@trpc/client';
 import { AppRouter } from './example-server';
 
@@ -43,16 +47,18 @@ describe('provideTRPC Factory Function Support', () => {
         providers: [
           provideZonelessChangeDetection(),
           provideTanStackQuery(queryClient),
-          provideTRPC(createTRPCClientFactory(() => {
-            // This factory function will be called during DI resolution
-            return createTRPCClient<AppRouter>({
-              links: [
-                httpBatchLink({
-                  url: 'http://localhost:3000/trpc',
-                }),
-              ],
-            });
-          })),
+          provideTRPC(
+            createTRPCClientFactory(() => {
+              // This factory function will be called during DI resolution
+              return createTRPCClient<AppRouter>({
+                links: [
+                  httpBatchLink({
+                    url: 'http://localhost:3000/trpc',
+                  }),
+                ],
+              });
+            }),
+          ),
         ],
       });
 
@@ -71,24 +77,24 @@ describe('provideTRPC Factory Function Support', () => {
       })
       class TestComponent {
         private trpc = injectTRPC<AppRouter>();
-        
+
         helloQuery = injectQuery(() => this.trpc.hello.queryOptions());
       }
-      
+
       const fixture = TestBed.createComponent(TestComponent);
       const component = fixture.componentInstance;
-      
+
       // Should be able to create the component without errors
       expect(component).toBeDefined();
       expect(component.helloQuery).toBeDefined();
       expect(component.helloQuery.isLoading).toBeDefined();
       expect(component.helloQuery.data).toBeDefined();
       expect(component.helloQuery.error).toBeDefined();
-      
+
       // Should be able to call the signal functions
       expect(typeof component.helloQuery.isLoading()).toBe('boolean');
       expect(typeof component.helloQuery.error()).toBe('object');
-      
+
       // Template should not throw during compilation
       expect(() => fixture.detectChanges()).not.toThrow();
     });
@@ -105,20 +111,22 @@ describe('provideTRPC Factory Function Support', () => {
           provideZonelessChangeDetection(),
           provideTanStackQuery(queryClient),
           { provide: API_SERVICE_TOKEN, useValue: mockService },
-          provideTRPC(createTRPCClientFactory(() => {
-            // Factory function can use dependency injection
-            const apiService = inject(API_SERVICE_TOKEN);
-            return createTRPCClient<AppRouter>({
-              links: [
-                httpBatchLink({
-                  url: apiService.getApiUrl(),
-                  headers: () => ({
-                    authorization: `Bearer ${apiService.getAuthToken()}`,
+          provideTRPC(
+            createTRPCClientFactory(() => {
+              // Factory function can use dependency injection
+              const apiService = inject(API_SERVICE_TOKEN);
+              return createTRPCClient<AppRouter>({
+                links: [
+                  httpBatchLink({
+                    url: apiService.getApiUrl(),
+                    headers: () => ({
+                      authorization: `Bearer ${apiService.getAuthToken()}`,
+                    }),
                   }),
-                }),
-              ],
-            });
-          })),
+                ],
+              });
+            }),
+          ),
         ],
       });
 
@@ -137,20 +145,22 @@ describe('provideTRPC Factory Function Support', () => {
       })
       class TestComponent {
         private trpc = injectTRPC<AppRouter>();
-        
-        greetQuery = injectQuery(() => this.trpc.greet.queryOptions({ name: 'World' }));
+
+        greetQuery = injectQuery(() =>
+          this.trpc.greet.queryOptions({ name: 'World' }),
+        );
       }
-      
+
       const fixture = TestBed.createComponent(TestComponent);
       const component = fixture.componentInstance;
-      
+
       // Should be able to create the component without errors
       expect(component).toBeDefined();
       expect(component.greetQuery).toBeDefined();
       expect(component.greetQuery.isLoading).toBeDefined();
       expect(component.greetQuery.data).toBeDefined();
       expect(component.greetQuery.error).toBeDefined();
-      
+
       // Template should not throw during compilation
       expect(() => fixture.detectChanges()).not.toThrow();
     });
@@ -160,28 +170,30 @@ describe('provideTRPC Factory Function Support', () => {
         providers: [
           provideZonelessChangeDetection(),
           provideTanStackQuery(queryClient),
-          provideTRPC(createTRPCClientFactory(() => {
-            return createTRPCClient<AppRouter>({
-              links: [
-                httpBatchLink({
-                  url: 'http://localhost:3000/trpc',
-                }),
-              ],
-            });
-          })),
+          provideTRPC(
+            createTRPCClientFactory(() => {
+              return createTRPCClient<AppRouter>({
+                links: [
+                  httpBatchLink({
+                    url: 'http://localhost:3000/trpc',
+                  }),
+                ],
+              });
+            }),
+          ),
         ],
       });
 
       @Component({
         template: `
           <div>
-            <button 
+            <button
               (click)="createUser()"
               [disabled]="createUserMutation.isPending()"
             >
               Create User
             </button>
-            
+
             @if (createUserMutation.isPending()) {
               <p>Creating user...</p>
             } @else if (createUserMutation.error()) {
@@ -194,17 +206,19 @@ describe('provideTRPC Factory Function Support', () => {
       })
       class CreateUserComponent {
         private trpc = injectTRPC<AppRouter>();
-        
-        createUserMutation = injectMutation(() => this.trpc.createUser.mutationOptions());
-        
+
+        createUserMutation = injectMutation(() =>
+          this.trpc.createUser.mutationOptions(),
+        );
+
         createUser() {
           this.createUserMutation.mutate({ name: 'John Doe' });
         }
       }
-      
+
       const fixture = TestBed.createComponent(CreateUserComponent);
       const component = fixture.componentInstance;
-      
+
       // Should be able to create the component and mutation
       expect(component).toBeDefined();
       expect(component.createUserMutation).toBeDefined();
@@ -213,7 +227,7 @@ describe('provideTRPC Factory Function Support', () => {
       expect(component.createUserMutation.data).toBeDefined();
       expect(component.createUserMutation.error).toBeDefined();
       expect(component.createUser).toBeDefined();
-      
+
       // Template should not throw during compilation
       expect(() => fixture.detectChanges()).not.toThrow();
     });
@@ -251,19 +265,19 @@ describe('provideTRPC Factory Function Support', () => {
       })
       class BackwardCompatComponent {
         private trpc = injectTRPC<AppRouter>();
-        
+
         helloQuery = injectQuery(() => this.trpc.hello.queryOptions());
       }
-      
+
       const fixture = TestBed.createComponent(BackwardCompatComponent);
       const component = fixture.componentInstance;
-      
+
       // Should maintain backward compatibility
       expect(component).toBeDefined();
       expect(component.helloQuery).toBeDefined();
       expect(component.helloQuery.isLoading).toBeDefined();
       expect(component.helloQuery.data).toBeDefined();
-      
+
       // Template should not throw during compilation
       expect(() => fixture.detectChanges()).not.toThrow();
     });

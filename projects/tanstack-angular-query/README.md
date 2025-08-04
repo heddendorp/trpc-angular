@@ -15,13 +15,13 @@ npm install @trpc/client @trpc/server @tanstack/angular-query-experimental tanst
 First, create your tRPC client:
 
 ```typescript
-import { createTRPCClient, httpBatchLink } from '@trpc/client';
-import type { AppRouter } from './server'; // Import your router type
+import { createTRPCClient, httpBatchLink } from "@trpc/client";
+import type { AppRouter } from "./server"; // Import your router type
 
 const trpc = createTRPCClient<AppRouter>({
   links: [
     httpBatchLink({
-      url: '/api/trpc',
+      url: "/api/trpc",
     }),
   ],
 });
@@ -32,10 +32,10 @@ const trpc = createTRPCClient<AppRouter>({
 In your `main.ts` or app config:
 
 ```typescript
-import { bootstrapApplication } from '@angular/platform-browser';
-import { provideAngularQuery, QueryClient } from '@tanstack/angular-query-experimental';
-import { provideTRPC } from 'tanstack-angular-query';
-import { AppComponent } from './app/app.component';
+import { bootstrapApplication } from "@angular/platform-browser";
+import { provideAngularQuery, QueryClient } from "@tanstack/angular-query-experimental";
+import { provideTRPC } from "tanstack-angular-query";
+import { AppComponent } from "./app/app.component";
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -49,12 +49,12 @@ bootstrapApplication(AppComponent, {
 ### 3. Use in Components
 
 ```typescript
-import { Component, inject } from '@angular/core';
-import { injectTRPC } from 'tanstack-angular-query';
-import { injectQuery } from '@tanstack/angular-query-experimental';
+import { Component, inject } from "@angular/core";
+import { injectTRPC } from "tanstack-angular-query";
+import { injectQuery } from "@tanstack/angular-query-experimental";
 
 @Component({
-  selector: 'app-example',
+  selector: "app-example",
   template: `
     <div>
       @if (query.isLoading()) {
@@ -69,49 +69,42 @@ import { injectQuery } from '@tanstack/angular-query-experimental';
 })
 export class ExampleComponent {
   private trpc = injectTRPC();
-  
-  query = injectQuery(
-    this.trpc.hello.queryOptions({ text: 'World' })
-  );
+
+  query = injectQuery(this.trpc.hello.queryOptions({ text: "World" }));
 }
 ```
 
 ### 4. Mutations
 
 ```typescript
-import { Component, inject } from '@angular/core';
-import { injectTRPC } from 'tanstack-angular-query';
-import { injectMutation } from '@tanstack/angular-query-experimental';
+import { Component, inject } from "@angular/core";
+import { injectTRPC } from "tanstack-angular-query";
+import { injectMutation } from "@tanstack/angular-query-experimental";
 
 @Component({
-  selector: 'app-mutation-example',
+  selector: "app-mutation-example",
   template: `
-    <button 
-      (click)="mutation.mutate({ text: 'Hello' })"
-      [disabled]="mutation.isPending()"
-    >
-      {{ mutation.isPending() ? 'Creating...' : 'Create Post' }}
+    <button (click)="mutation.mutate({ text: 'Hello' })" [disabled]="mutation.isPending()">
+      {{ mutation.isPending() ? "Creating..." : "Create Post" }}
     </button>
   `,
 })
 export class MutationExampleComponent {
   private trpc = injectTRPC();
-  
-  mutation = injectMutation(
-    this.trpc.createPost.mutationOptions()
-  );
+
+  mutation = injectMutation(this.trpc.createPost.mutationOptions());
 }
 ```
 
 ### 5. Infinite Queries
 
 ```typescript
-import { Component, inject } from '@angular/core';
-import { injectTRPC } from 'tanstack-angular-query';
-import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
+import { Component, inject } from "@angular/core";
+import { injectTRPC } from "tanstack-angular-query";
+import { injectInfiniteQuery } from "@tanstack/angular-query-experimental";
 
 @Component({
-  selector: 'app-infinite-example',
+  selector: "app-infinite-example",
   template: `
     <div>
       @for (page of infiniteQuery.data()?.pages; track page) {
@@ -119,24 +112,19 @@ import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
           <div>{{ item.title }}</div>
         }
       }
-      <button 
-        (click)="infiniteQuery.fetchNextPage()"
-        [disabled]="infiniteQuery.isFetchingNextPage()"
-      >
-        Load More
-      </button>
+      <button (click)="infiniteQuery.fetchNextPage()" [disabled]="infiniteQuery.isFetchingNextPage()">Load More</button>
     </div>
   `,
 })
 export class InfiniteExampleComponent {
   private trpc = injectTRPC();
-  
+
   infiniteQuery = injectInfiniteQuery(
     this.trpc.posts.infiniteQueryOptions({
       limit: 10,
       initialCursor: null,
       getNextPageParam: (lastPage) => lastPage.nextCursor,
-    })
+    }),
   );
 }
 ```
@@ -144,16 +132,16 @@ export class InfiniteExampleComponent {
 ### 6. Subscriptions
 
 ```typescript
-import { Component, inject } from '@angular/core';
-import { injectTRPC, injectTRPCSubscription } from 'tanstack-angular-query';
+import { Component, inject } from "@angular/core";
+import { injectTRPC, injectTRPCSubscription } from "tanstack-angular-query";
 
 @Component({
-  selector: 'app-subscription-example',
+  selector: "app-subscription-example",
   template: `
     <div>
-      @if (subscription.status === 'connecting') {
+      @if (subscription.status === "connecting") {
         <p>Connecting...</p>
-      } @else if (subscription.status === 'error') {
+      } @else if (subscription.status === "error") {
         <p>Error: {{ subscription.error?.message }}</p>
       } @else if (subscription.data) {
         <p>{{ subscription.data }}</p>
@@ -163,10 +151,8 @@ import { injectTRPC, injectTRPCSubscription } from 'tanstack-angular-query';
 })
 export class SubscriptionExampleComponent {
   private trpc = injectTRPC();
-  
-  subscription = injectTRPCSubscription(
-    this.trpc.messages.subscriptionOptions({ channel: 'general' })
-  );
+
+  subscription = injectTRPCSubscription(this.trpc.messages.subscriptionOptions({ channel: "general" }));
 }
 ```
 

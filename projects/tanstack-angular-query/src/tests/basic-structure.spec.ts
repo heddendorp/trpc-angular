@@ -2,7 +2,10 @@ import { TestBed } from '@angular/core/testing';
 import { describe, expect, it, beforeEach } from 'vitest';
 import { Component } from '@angular/core';
 import { provideZonelessChangeDetection } from '@angular/core';
-import { QueryClient, provideTanStackQuery } from '@tanstack/angular-query-experimental';
+import {
+  QueryClient,
+  provideTanStackQuery,
+} from '@tanstack/angular-query-experimental';
 import { injectTRPC, provideTRPC } from '../public-api';
 import { createTRPCClient, httpBatchLink } from '@trpc/client';
 import { AppRouter } from './example-server';
@@ -48,7 +51,7 @@ describe('tanstack-angular-query Basic Tests', () => {
     it('should inject TRPC proxy successfully', () => {
       const fixture = TestBed.createComponent(TestComponent);
       const component = fixture.componentInstance;
-      
+
       expect(component.trpc).toBeDefined();
       expect(typeof component.trpc).toBe('function'); // Proxy is technically a function
     });
@@ -56,7 +59,7 @@ describe('tanstack-angular-query Basic Tests', () => {
     it('should provide access to query procedures', () => {
       const fixture = TestBed.createComponent(TestComponent);
       const component = fixture.componentInstance;
-      
+
       expect(component.trpc.hello).toBeDefined();
       expect(component.trpc.greet).toBeDefined();
       expect(component.trpc.getUser).toBeDefined();
@@ -65,7 +68,7 @@ describe('tanstack-angular-query Basic Tests', () => {
     it('should provide access to mutation procedures', () => {
       const fixture = TestBed.createComponent(TestComponent);
       const component = fixture.componentInstance;
-      
+
       expect(component.trpc.createUser).toBeDefined();
       expect(component.trpc.updateUser).toBeDefined();
       expect(component.trpc.deleteUser).toBeDefined();
@@ -74,7 +77,7 @@ describe('tanstack-angular-query Basic Tests', () => {
     it('should provide queryOptions method for query procedures', () => {
       const fixture = TestBed.createComponent(TestComponent);
       const component = fixture.componentInstance;
-      
+
       expect(component.trpc.hello.queryOptions).toBeDefined();
       expect(typeof component.trpc.hello.queryOptions).toBe('function');
     });
@@ -82,7 +85,7 @@ describe('tanstack-angular-query Basic Tests', () => {
     it('should provide mutationOptions method for mutation procedures', () => {
       const fixture = TestBed.createComponent(TestComponent);
       const component = fixture.componentInstance;
-      
+
       expect(component.trpc.createUser.mutationOptions).toBeDefined();
       expect(typeof component.trpc.createUser.mutationOptions).toBe('function');
     });
@@ -90,17 +93,21 @@ describe('tanstack-angular-query Basic Tests', () => {
     it('should provide infiniteQueryOptions method for appropriate procedures', () => {
       const fixture = TestBed.createComponent(TestComponent);
       const component = fixture.componentInstance;
-      
+
       expect(component.trpc.getUsers.infiniteQueryOptions).toBeDefined();
-      expect(typeof component.trpc.getUsers.infiniteQueryOptions).toBe('function');
+      expect(typeof component.trpc.getUsers.infiniteQueryOptions).toBe(
+        'function',
+      );
     });
 
     it('should provide subscriptionOptions method for subscription procedures', () => {
       const fixture = TestBed.createComponent(TestComponent);
       const component = fixture.componentInstance;
-      
+
       expect(component.trpc.userUpdates.subscriptionOptions).toBeDefined();
-      expect(typeof component.trpc.userUpdates.subscriptionOptions).toBe('function');
+      expect(typeof component.trpc.userUpdates.subscriptionOptions).toBe(
+        'function',
+      );
     });
   });
 
@@ -108,9 +115,9 @@ describe('tanstack-angular-query Basic Tests', () => {
     it('should generate query options with correct structure', () => {
       const fixture = TestBed.createComponent(TestComponent);
       const component = fixture.componentInstance;
-      
+
       const options = component.trpc.hello.queryOptions();
-      
+
       expect(options).toBeDefined();
       expect(options.queryKey).toBeDefined();
       expect(options.queryFn).toBeDefined();
@@ -120,9 +127,9 @@ describe('tanstack-angular-query Basic Tests', () => {
     it('should generate query options with input', () => {
       const fixture = TestBed.createComponent(TestComponent);
       const component = fixture.componentInstance;
-      
+
       const options = component.trpc.greet.queryOptions({ name: 'John' });
-      
+
       expect(options).toBeDefined();
       expect(options.queryKey).toBeDefined();
       expect(options.queryFn).toBeDefined();
@@ -134,9 +141,9 @@ describe('tanstack-angular-query Basic Tests', () => {
     it('should generate mutation options with correct structure', () => {
       const fixture = TestBed.createComponent(TestComponent);
       const component = fixture.componentInstance;
-      
+
       const options = component.trpc.createUser.mutationOptions();
-      
+
       expect(options).toBeDefined();
       expect(options.mutationFn).toBeDefined();
       expect(typeof options.mutationFn).toBe('function');
@@ -147,15 +154,15 @@ describe('tanstack-angular-query Basic Tests', () => {
     it('should generate infinite query options with correct structure', () => {
       const fixture = TestBed.createComponent(TestComponent);
       const component = fixture.componentInstance;
-      
+
       const options = component.trpc.getUsers.infiniteQueryOptions(
         { limit: 10 },
         {
           initialCursor: 0,
           getNextPageParam: (lastPage: any) => lastPage.nextCursor,
-        }
+        },
       );
-      
+
       expect(options).toBeDefined();
       expect(options.queryKey).toBeDefined();
       expect(options.queryFn).toBeDefined();
@@ -168,9 +175,9 @@ describe('tanstack-angular-query Basic Tests', () => {
     it('should generate subscription options with correct structure', () => {
       const fixture = TestBed.createComponent(TestComponent);
       const component = fixture.componentInstance;
-      
+
       const options = component.trpc.userUpdates.subscriptionOptions();
-      
+
       expect(options).toBeDefined();
       expect(options.subscribe).toBeDefined();
       expect(typeof options.subscribe).toBe('function');

@@ -19,32 +19,33 @@ This is a monorepo containing Angular-specific tRPC packages that provide seamle
    - Main file: `src/lib/`
 
 ### Package Relationship
+
 - Both packages are complementary but independent
 - `trpc-link-angular` provides the transport layer (HTTP communication)
 - `tanstack-angular-query` provides the query layer (caching, state management)
 - They can be used together for a complete Angular-native tRPC solution
 
 ### Integration Pattern
+
 ```typescript
 // Use trpc-link-angular for transport
 const trpcClient = createTRPCClient<AppRouter>({
   links: [
     angularHttpLink({
-      url: 'http://localhost:3000/trpc',
+      url: "http://localhost:3000/trpc",
       httpClient: inject(HttpClient),
     }),
   ],
 });
 
 // Use tanstack-angular-query for reactive queries
-const userQuery = injectTRPCQuery((trpc) => 
-  trpc.user.get.query({ id: 1 })
-);
+const userQuery = injectTRPCQuery((trpc) => trpc.user.get.query({ id: 1 }));
 ```
 
 ## Development Environment
 
 ### Tech Stack
+
 - **Angular**: 20.x (supports 16+)
 - **TypeScript**: 5.8.x
 - **Node.js**: 18+ or 20+
@@ -52,6 +53,7 @@ const userQuery = injectTRPCQuery((trpc) =>
 - **Build System**: Angular CLI + ng-packagr
 
 ### Project Structure
+
 ```
 /
 ├── projects/
@@ -77,6 +79,7 @@ const userQuery = injectTRPCQuery((trpc) =>
 ## Key Features
 
 ### trpc-link-angular
+
 - Full Angular HttpClient integration
 - HTTP interceptors support
 - Error handling with HttpErrorResponse
@@ -85,6 +88,7 @@ const userQuery = injectTRPCQuery((trpc) =>
 - Dependency injection compatible
 
 ### tanstack-angular-query
+
 - Reactive query management
 - Angular signals integration
 - Infinite queries support
@@ -96,6 +100,7 @@ const userQuery = injectTRPCQuery((trpc) =>
 ## Development Commands
 
 ### Building
+
 ```bash
 # Build all packages
 yarn build
@@ -109,6 +114,7 @@ ng build trpc-link-angular --watch
 ```
 
 ### Testing
+
 ```bash
 # Run all tests
 ng test
@@ -119,6 +125,7 @@ ng test tanstack-angular-query
 ```
 
 ### Local Development
+
 ```bash
 # Install dependencies
 yarn install
@@ -134,12 +141,14 @@ cd dist/tanstack-angular-query && yarn link
 ## Code Standards
 
 ### TypeScript
+
 - Use strict mode
 - Leverage type inference
 - Avoid `any` types
 - Use proper generic constraints
 
 ### Angular
+
 - Use standalone components
 - Implement OnPush change detection
 - Use dependency injection
@@ -147,6 +156,7 @@ cd dist/tanstack-angular-query && yarn link
 - Use signals for reactive state
 
 ### tRPC Integration
+
 - Maintain type safety across client-server boundary
 - Use proper error handling
 - Implement proper serialization
@@ -155,18 +165,21 @@ cd dist/tanstack-angular-query && yarn link
 ## Testing Guidelines
 
 ### Unit Tests
+
 - Test all public APIs
 - Mock external dependencies
 - Test error scenarios
 - Verify type safety
 
 ### Integration Tests
+
 - Test package interactions
 - Verify Angular integration
 - Test HTTP interceptors
 - Test error handling
 
 ### E2E Tests
+
 - Test complete workflows
 - Verify browser compatibility
 - Test performance
@@ -175,12 +188,14 @@ cd dist/tanstack-angular-query && yarn link
 ## Documentation
 
 ### Structure
+
 - Main README.md - Project overview
 - Package READMEs - Package-specific documentation
 - Examples - Usage examples and guides
 - MAINTENANCE_GUIDE.md - Development workflow
 
 ### Content Guidelines
+
 - Include installation instructions
 - Provide clear examples
 - Document API references
@@ -190,12 +205,14 @@ cd dist/tanstack-angular-query && yarn link
 ## Release Process
 
 ### Version Management
+
 - Follow semantic versioning
 - Update package.json versions
 - Update CHANGELOG.md
 - Create release tags
 
 ### Publishing
+
 - Build packages first
 - Test in local environment
 - Publish to npm registry
@@ -204,6 +221,7 @@ cd dist/tanstack-angular-query && yarn link
 ## Future Roadmap
 
 ### Planned Features
+
 1. Add comprehensive test suite
 2. Implement proper linting configuration
 3. Add more detailed examples
@@ -211,6 +229,7 @@ cd dist/tanstack-angular-query && yarn link
 5. Optimize bundle size and tree-shaking
 
 ### Maintenance
+
 - Regular dependency updates
 - Angular version compatibility
 - Performance optimizations
@@ -220,12 +239,14 @@ cd dist/tanstack-angular-query && yarn link
 ## Support and Community
 
 ### Issues
+
 - Use GitHub issues for bug reports
 - Provide reproduction steps
 - Include environment details
 - Follow issue templates
 
 ### Contributions
+
 - Fork repository
 - Create feature branches
 - Follow coding standards
@@ -233,6 +254,7 @@ cd dist/tanstack-angular-query && yarn link
 - Update documentation
 
 ### Communication
+
 - Use GitHub discussions for questions
 - Follow security reporting guidelines
 - Provide feedback on improvements
@@ -241,12 +263,14 @@ cd dist/tanstack-angular-query && yarn link
 ## Security Considerations
 
 ### Dependencies
+
 - Keep dependencies updated
 - Monitor security advisories
 - Use peer dependencies appropriately
 - Avoid vulnerable packages
 
 ### Code Quality
+
 - Use linting tools
 - Follow security best practices
 - Validate inputs

@@ -7,7 +7,7 @@ type UserData = {
   test: string;
   [key: string]: any;
 };
-const t = initTRPC.context<{user?: UserData}>().create();
+const t = initTRPC.context<{ user?: UserData }>().create();
 
 export const appRouter = t.router({
   hello: t.procedure.query(() => {
@@ -50,41 +50,46 @@ export const appRouter = t.router({
 
   // For infinite query tests
   getUsers: t.procedure
-    .input(z.object({
-      cursor: z.number().optional(),
-      limit: z.number().min(1).max(100).default(10)
-    }))
+    .input(
+      z.object({
+        cursor: z.number().optional(),
+        limit: z.number().min(1).max(100).default(10),
+      }),
+    )
     .query(({ input }) => {
       const { cursor = 0, limit } = input;
       const users = Array.from({ length: limit }, (_, i) => ({
         id: cursor + i + 1,
-        name: `User ${cursor + i + 1}`
+        name: `User ${cursor + i + 1}`,
       }));
 
       return {
         users,
-        nextCursor: cursor + limit < 100 ? cursor + limit : undefined
+        nextCursor: cursor + limit < 100 ? cursor + limit : undefined,
       };
     }),
 
   // For subscription tests
-  userUpdates: t.procedure
-    .subscription(() => {
-      return observable<{ id: number; name: string; action: 'created' | 'updated' | 'deleted' }>((emit) => {
-        // Simulate user updates
-        const timer = setInterval(() => {
-          const actions = ['created', 'updated', 'deleted'] as const;
-          const action = actions[Math.floor(Math.random() * actions.length)];
-          emit.next({
-            id: Math.floor(Math.random() * 1000),
-            name: `User ${Math.floor(Math.random() * 1000)}`,
-            action
-          });
-        }, 1000);
+  userUpdates: t.procedure.subscription(() => {
+    return observable<{
+      id: number;
+      name: string;
+      action: 'created' | 'updated' | 'deleted';
+    }>((emit) => {
+      // Simulate user updates
+      const timer = setInterval(() => {
+        const actions = ['created', 'updated', 'deleted'] as const;
+        const action = actions[Math.floor(Math.random() * actions.length)];
+        emit.next({
+          id: Math.floor(Math.random() * 1000),
+          name: `User ${Math.floor(Math.random() * 1000)}`,
+          action,
+        });
+      }, 1000);
 
-        return () => clearInterval(timer);
-      });
-    }),
+      return () => clearInterval(timer);
+    });
+  }),
 
   // For error handling tests
   errorQuery: t.procedure
