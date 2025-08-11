@@ -8,7 +8,7 @@
     "format": "prettier . --write",
     "test": "ng test --watch=false",
     "changeset:version": "changeset version",
-    "changeset:publish": "yarn run build && changeset publish"
+    "changeset:publish": "yarn run build && node scripts/publish.js"
   },
   "workspaces": [
     "projects/*"
