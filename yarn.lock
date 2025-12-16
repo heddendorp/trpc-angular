@@ -2503,12 +2503,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trpc/server@npm:^11.4.3":
-  version: 11.4.3
-  resolution: "@trpc/server@npm:11.4.3"
+"@trpc/server@npm:^11.8.0":
+  version: 11.8.0
+  resolution: "@trpc/server@npm:11.8.0"
   peerDependencies:
     typescript: ">=5.7.2"
-  checksum: 10c0/3d3fd2a52cb36de5a02c3454d66ac5c739ba53442546aa9a06c79e277951a31827f21b9c135f551c98a197d28f1d6c87aba590dc08c98c15b8ba7a4b9a7653d2
+  checksum: 10c0/1be1e13aab5a6a85cec868fcd303277bbfb64e69ad95fb7f340513a2b7eb7689909e7c9ea8ad8c3b72c5c687ab2da0c5f96daf67d781cb3a8d9283ae6095c451
   languageName: node
   linkType: hard
 
@@ -6686,7 +6686,7 @@ __metadata:
     "@changesets/cli": "npm:^2.29.5"
     "@tanstack/angular-query-experimental": "npm:^5.83.0"
     "@trpc/client": "npm:^11.4.3"
-    "@trpc/server": "npm:^11.4.3"
+    "@trpc/server": "npm:^11.8.0"
     jsdom: "npm:^26.1.0"
     ng-packagr: "npm:^20.1.0"
     prettier: "npm:3.6.2"
