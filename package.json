@@ -41,7 +41,7 @@
     "@changesets/cli": "^2.29.5",
     "@tanstack/angular-query-experimental": "^5.83.0",
     "@trpc/client": "^11.4.3",
-    "@trpc/server": "^11.4.3",
+    "@trpc/server": "^11.8.0",
     "jsdom": "^26.1.0",
     "ng-packagr": "^20.1.0",
     "prettier": "3.6.2",
